@@ -4,7 +4,7 @@ export default function GreetingHero() {
   return (
     <div className="text-center mb-8">
       <h2 className="text-3xl font-bold text-text-primary mb-2">
-        Hi Dr. Reynolds, how can I help you today?
+        Hi Dr. Prerna, how can I help you today?
       </h2>
       <p className="text-text-secondary text-base">
         Your AI assistant is ready to help with patient records, diagnoses, and documentation.

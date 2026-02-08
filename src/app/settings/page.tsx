@@ -23,12 +23,12 @@ export default function SettingsPage() {
                     </h2>
                     <div className="flex items-center gap-4">
                         <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center text-white text-xl font-bold">
-                            DR
+                            DP
                         </div>
                         <div>
-                            <p className="text-lg font-bold text-text-primary">Dr. Reynolds</p>
+                            <p className="text-lg font-bold text-text-primary">Dr. Prerna</p>
                             <p className="text-sm text-text-secondary">General Physician</p>
-                            <p className="text-xs text-text-secondary mt-1">dr.reynolds@clinicos.in</p>
+                            <p className="text-xs text-text-secondary mt-1">dr.prerna@parchi.ai</p>
                         </div>
                     </div>
                 </div>

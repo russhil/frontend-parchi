@@ -6,35 +6,35 @@ interface TranscriptInputProps {
   isRecording: boolean;
 }
 
-const SAMPLE_TRANSCRIPT = `Dr. Reynolds: Good morning Sarah, how are you feeling today?
+const SAMPLE_TRANSCRIPT = `Dr. Prerna: Good morning Sarah, how are you feeling today?
 
 Sarah: Hi Doctor. The migraines have been getting worse honestly. I had three episodes this past week alone.
 
-Dr. Reynolds: I see. Tell me more about these episodes. Where exactly is the pain?
+Dr. Prerna: I see. Tell me more about these episodes. Where exactly is the pain?
 
 Sarah: It's always on the right side, kind of behind my eye. It starts as a dull ache in the afternoon and then becomes this intense throbbing. Last Tuesday it was so bad I had to leave work early.
 
-Dr. Reynolds: On a scale of 1 to 10, how would you rate the worst episode?
+Dr. Prerna: On a scale of 1 to 10, how would you rate the worst episode?
 
 Sarah: The one on Tuesday was probably an 8. The others were around 6 or 7.
 
-Dr. Reynolds: Any nausea, vomiting, or sensitivity to light?
+Dr. Prerna: Any nausea, vomiting, or sensitivity to light?
 
 Sarah: Nausea yes, especially with the bad ones. No vomiting though. And bright lights definitely make it worse — I've been wearing sunglasses indoors which my colleagues find amusing.
 
-Dr. Reynolds: How's the Sumatriptan working for you?
+Dr. Prerna: How's the Sumatriptan working for you?
 
 Sarah: It helps somewhat. Takes about 45 minutes to kick in and dulls the pain to maybe a 3 or 4. But I'm worried about taking it too often. I've used it maybe 8 times this month.
 
-Dr. Reynolds: That's a valid concern. How's your sleep been?
+Dr. Prerna: That's a valid concern. How's your sleep been?
 
 Sarah: Not great. Maybe 5 hours a night. Work has been really stressful — we have a big project deadline coming up.
 
-Dr. Reynolds: Are you still taking your Levothyroxine regularly?
+Dr. Prerna: Are you still taking your Levothyroxine regularly?
 
 Sarah: Yes, every morning. No issues with that.
 
-Dr. Reynolds: Any changes in your asthma? Using the inhaler more often?
+Dr. Prerna: Any changes in your asthma? Using the inhaler more often?
 
 Sarah: No, the asthma has been fine actually. Maybe once or twice this month.`;
 

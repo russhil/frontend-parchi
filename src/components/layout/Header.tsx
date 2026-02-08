@@ -53,10 +53,10 @@ export default function Header() {
         </button>
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-xs font-semibold">
-            DR
+            DP
           </div>
           <div className="hidden sm:block">
-            <p className="text-sm font-semibold leading-tight">Dr. Reynolds</p>
+            <p className="text-sm font-semibold leading-tight">Dr. Prerna</p>
             <p className="text-xs text-text-secondary leading-tight">General Physician</p>
           </div>
         </div>

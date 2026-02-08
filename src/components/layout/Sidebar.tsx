@@ -29,8 +29,8 @@ export default function Sidebar() {
               key={item.label}
               href={item.href}
               className={`flex flex-col items-center justify-center w-12 h-12 rounded-xl transition-colors ${isActive
-                  ? "bg-primary-light text-primary"
-                  : "text-text-secondary hover:bg-gray-100"
+                ? "bg-primary-light text-primary"
+                : "text-text-secondary hover:bg-gray-100"
                 }`}
               title={item.label}
             >
@@ -44,7 +44,7 @@ export default function Sidebar() {
       {/* Doctor Avatar */}
       <div className="mt-auto">
         <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-sm">
-          DR
+          DP
         </div>
       </div>
     </aside>

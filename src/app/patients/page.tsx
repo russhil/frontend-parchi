@@ -58,7 +58,10 @@ export default function PatientsPage() {
                             {patients.length} patients registered
                         </p>
                     </div>
-                    <button className="flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-xl text-sm font-semibold hover:bg-primary-dark transition shadow-sm">
+                    <button
+                        onClick={() => router.push("/patients/add")}
+                        className="flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-xl text-sm font-semibold hover:bg-primary-dark transition shadow-sm"
+                    >
                         <span className="material-symbols-outlined text-[20px]">person_add</span>
                         Add Patient
                     </button>
