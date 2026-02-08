@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { chat } from "@/lib/api";
 import type { ChatMessage } from "@/types";
+import ReactMarkdown from "react-markdown";
 
 interface AskAIPanelProps {
   patientId: string;
@@ -76,13 +77,28 @@ export default function AskAIPanel({ patientId }: AskAIPanelProps) {
         {messages.map((msg, i) => (
           <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
             <div
-              className={`max-w-[85%] px-3 py-2 rounded-2xl text-xs leading-relaxed ${
-                msg.role === "user"
-                  ? "bg-primary text-white rounded-br-md"
-                  : "bg-bg text-text-primary rounded-bl-md"
-              }`}
+              className={`max-w-[85%] px-3 py-2 rounded-2xl text-xs leading-relaxed ${msg.role === "user"
+                ? "bg-primary text-white rounded-br-md"
+                : "bg-bg text-text-primary rounded-bl-md"
+                }`}
             >
-              {msg.content}
+              <div className="prose prose-sm max-w-none prose-p:my-1 prose-headings:my-2 prose-ul:my-1 prose-li:my-0.5">
+                <ReactMarkdown
+                  components={{
+                    p: ({ node, ...props }: any) => <p className="mb-2 last:mb-0" {...props} />,
+                    ul: ({ node, ...props }: any) => <ul className="list-disc pl-4 mb-2 last:mb-0" {...props} />,
+                    ol: ({ node, ...props }: any) => <ol className="list-decimal pl-4 mb-2 last:mb-0" {...props} />,
+                    li: ({ node, ...props }: any) => <li className="mb-0.5" {...props} />,
+                    h1: ({ node, ...props }: any) => <h1 className="text-sm font-bold mb-2 mt-2 first:mt-0" {...props} />,
+                    h2: ({ node, ...props }: any) => <h2 className="text-sm font-bold mb-2 mt-2 first:mt-0" {...props} />,
+                    h3: ({ node, ...props }: any) => <h3 className="text-sm font-bold mb-1 mt-2 first:mt-0" {...props} />,
+                    strong: ({ node, ...props }: any) => <strong className="font-bold" {...props} />,
+                    em: ({ node, ...props }: any) => <em className="italic" {...props} />,
+                  }}
+                >
+                  {msg.content}
+                </ReactMarkdown>
+              </div>
             </div>
           </div>
         ))}

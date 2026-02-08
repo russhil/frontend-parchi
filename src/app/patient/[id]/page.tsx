@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useEffect, useState, useCallback } from "react";
+import { useParams, useSearchParams } from "next/navigation";
 import { getPatient } from "@/lib/api";
 import type { PatientPageData } from "@/types";
 import PatientProfile from "@/components/patient/PatientProfile";
@@ -13,23 +13,30 @@ import FloatingActionBar from "@/components/layout/FloatingActionBar";
 
 export default function PatientPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const patientId = params.id as string;
+  const appointmentId = searchParams.get("appointment") || undefined;
   const [data, setData] = useState<PatientPageData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function loadPatient() {
-      try {
-        const result = await getPatient(patientId);
-        setData(result);
-      } catch {
-        // Fallback will show skeleton loaders
-      } finally {
-        setLoading(false);
-      }
+  const loadPatient = useCallback(async () => {
+    try {
+      const result = await getPatient(patientId);
+      setData(result);
+    } catch {
+      // Fallback will show error message
+    } finally {
+      setLoading(false);
     }
-    loadPatient();
   }, [patientId]);
+
+  useEffect(() => {
+    loadPatient();
+  }, [loadPatient]);
+
+  // Get the first today's appointment ID if none provided
+  const currentAppointmentId = appointmentId ||
+    data?.appointments?.find(a => a.status === "scheduled")?.id;
 
   if (loading) {
     return (
@@ -81,19 +88,24 @@ export default function PatientPage() {
 
         {/* Center Column — 5/12 */}
         <div className="col-span-5 space-y-5">
-          <AIIntakeSummary summary={data.ai_intake_summary} />
+          <AIIntakeSummary summary={data.ai_intake_summary} patientId={patientId} onRefresh={loadPatient} />
           <ReportInsights insights={data.report_insights} documents={data.documents} />
         </div>
 
         {/* Right Column — 4/12 */}
         <div className="col-span-4 space-y-5">
-          <DifferentialDiagnosis items={data.differential_diagnosis} />
+          <DifferentialDiagnosis items={data.differential_diagnosis} patientId={patientId} />
           <AskAIPanel patientId={patientId} />
         </div>
       </div>
 
       {/* Floating Action Bar */}
-      <FloatingActionBar patientId={patientId} />
+      <FloatingActionBar
+        patientId={patientId}
+        patientName={data.patient.name}
+        appointmentId={currentAppointmentId}
+        onRefresh={loadPatient}
+      />
     </div>
   );
 }

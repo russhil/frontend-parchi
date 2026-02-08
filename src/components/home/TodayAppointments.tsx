@@ -1,30 +1,63 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { getTodaysAppointments } from "@/lib/api";
 
-const demoAppointments = [
-  {
-    id: "a1",
-    patientId: "p1",
-    patientName: "Sarah Jenkins",
-    time: "9:30 AM",
-    reason: "Follow-up: Migraine",
-    status: "scheduled",
-    initials: "SJ",
-  },
-  {
-    id: "a2",
-    patientId: "p1",
-    patientName: "Sarah Jenkins",
-    time: "11:00 AM",
-    reason: "Routine check",
-    status: "tomorrow",
-    initials: "SJ",
-  },
-];
+interface AppointmentData {
+  id: string;
+  patient_id: string;
+  start_time: string;
+  status: string;
+  reason: string;
+  patients?: {
+    id: string;
+    name: string;
+  };
+}
 
 export default function TodayAppointments() {
   const router = useRouter();
+  const [appointments, setAppointments] = useState<AppointmentData[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadAppointments() {
+      try {
+        const data = await getTodaysAppointments();
+        setAppointments(data.appointments || []);
+      } catch {
+        // Use fallback data
+        setAppointments([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadAppointments();
+  }, []);
+
+  const formatTime = (isoString: string) => {
+    const date = new Date(isoString);
+    return date.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" });
+  };
+
+  const getInitials = (name: string) => {
+    return name.split(" ").map((n) => n[0]).join("").toUpperCase();
+  };
+
+  if (loading) {
+    return (
+      <div className="w-full max-w-2xl mx-auto">
+        <div className="bg-surface rounded-2xl border border-border-light shadow-sm p-6 animate-pulse">
+          <div className="h-4 bg-gray-200 rounded w-1/3 mb-4" />
+          <div className="space-y-3">
+            <div className="h-16 bg-gray-200 rounded" />
+            <div className="h-16 bg-gray-200 rounded" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-2xl mx-auto">
@@ -37,35 +70,62 @@ export default function TodayAppointments() {
         </div>
 
         <div className="divide-y divide-border-light">
-          {demoAppointments.map((apt) => (
-            <button
-              key={apt.id}
-              onClick={() => router.push(`/patient/${apt.patientId}`)}
-              className="w-full text-left px-5 py-4 hover:bg-gray-50 transition flex items-center gap-4"
-            >
-              <div className="w-10 h-10 rounded-full bg-primary-light flex items-center justify-center text-primary font-semibold text-sm">
-                {apt.initials}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-text-primary">{apt.patientName}</p>
-                <p className="text-xs text-text-secondary mt-0.5">{apt.reason}</p>
-              </div>
-              <div className="text-right">
-                <p className="text-sm font-semibold text-text-primary">{apt.time}</p>
-                <span
-                  className={`inline-block text-xs font-medium px-2 py-0.5 rounded-full mt-0.5 ${
-                    apt.status === "scheduled"
-                      ? "bg-primary-light text-primary"
-                      : "bg-gray-100 text-text-secondary"
-                  }`}
-                >
-                  {apt.status === "scheduled" ? "Today" : "Tomorrow"}
-                </span>
-              </div>
-              <span className="material-symbols-outlined text-text-secondary text-[20px]">chevron_right</span>
-            </button>
-          ))}
+          {appointments.length > 0 ? (
+            appointments.map((apt) => (
+              <button
+                key={apt.id}
+                onClick={() => router.push(`/patient/${apt.patient_id}?appointment=${apt.id}`)}
+                className="w-full text-left px-5 py-4 hover:bg-gray-50 transition flex items-center gap-4"
+              >
+                <div className="w-10 h-10 rounded-full bg-primary-light flex items-center justify-center text-primary font-semibold text-sm">
+                  {apt.patients?.name ? getInitials(apt.patients.name) : "?"}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-text-primary">
+                    {apt.patients?.name || "Unknown Patient"}
+                  </p>
+                  <p className="text-xs text-text-secondary mt-0.5">{apt.reason}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-semibold text-text-primary">{formatTime(apt.start_time)}</p>
+                  <span
+                    className={`inline-block text-xs font-medium px-2 py-0.5 rounded-full mt-0.5 ${apt.status === "completed"
+                        ? "bg-green-100 text-green-700"
+                        : apt.status === "scheduled"
+                          ? "bg-primary-light text-primary"
+                          : "bg-gray-100 text-text-secondary"
+                      }`}
+                  >
+                    {apt.status === "scheduled" ? "Scheduled" : apt.status.charAt(0).toUpperCase() + apt.status.slice(1)}
+                  </span>
+                </div>
+                <span className="material-symbols-outlined text-text-secondary text-[20px]">chevron_right</span>
+              </button>
+            ))
+          ) : (
+            <div className="px-5 py-8 text-center">
+              <span className="material-symbols-outlined text-gray-300 text-[40px] mb-2 block">event_available</span>
+              <p className="text-sm text-text-secondary">No appointments scheduled for today</p>
+              <button
+                onClick={() => router.push("/appointments")}
+                className="mt-3 text-xs text-primary font-medium hover:underline"
+              >
+                View all appointments →
+              </button>
+            </div>
+          )}
         </div>
+
+        {appointments.length > 0 && (
+          <div className="px-5 py-3 border-t border-border-light">
+            <button
+              onClick={() => router.push("/appointments")}
+              className="text-xs text-primary font-medium hover:underline"
+            >
+              View all appointments →
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

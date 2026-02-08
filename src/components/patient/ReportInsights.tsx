@@ -38,7 +38,7 @@ export default function ReportInsights({ insights, documents }: ReportInsightsPr
       <div className="px-5 py-4 space-y-4">
         {/* Document Thumbnails */}
         <div className="flex gap-3 overflow-x-auto pb-2">
-          {documents.map((doc) => (
+          {(documents || []).map((doc) => (
             <div
               key={doc.id}
               className="flex-shrink-0 w-36 bg-bg rounded-xl p-3 border border-border-light hover:border-primary/30 transition cursor-pointer"
@@ -61,16 +61,15 @@ export default function ReportInsights({ insights, documents }: ReportInsightsPr
 
         {/* Flags */}
         <div className="space-y-2">
-          {insights.flags.map((flag, i) => (
+          {(insights.flags || []).map((flag, i) => (
             <div
               key={i}
-              className={`flex items-start gap-2 px-3 py-2.5 rounded-xl text-xs ${
-                flag.type === "warning"
-                  ? "bg-amber-50 text-amber-800"
-                  : flag.type === "error"
+              className={`flex items-start gap-2 px-3 py-2.5 rounded-xl text-xs ${flag.type === "warning"
+                ? "bg-amber-50 text-amber-800"
+                : flag.type === "error"
                   ? "bg-red-50 text-red-800"
                   : "bg-blue-50 text-blue-800"
-              }`}
+                }`}
             >
               <span className="material-symbols-outlined text-[16px] mt-0.5">
                 {flag.type === "warning" ? "warning" : flag.type === "error" ? "error" : "info"}

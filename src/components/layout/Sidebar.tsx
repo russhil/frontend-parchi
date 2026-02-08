@@ -5,9 +5,9 @@ import { usePathname } from "next/navigation";
 
 const navItems = [
   { icon: "home", label: "Home", href: "/" },
-  { icon: "calendar_today", label: "Calendar", href: "#" },
-  { icon: "group", label: "Patients", href: "#" },
-  { icon: "settings", label: "Settings", href: "#" },
+  { icon: "calendar_today", label: "Schedule", href: "/appointments" },
+  { icon: "group", label: "Patients", href: "/patients" },
+  { icon: "settings", label: "Settings", href: "/settings" },
 ];
 
 export default function Sidebar() {
@@ -28,11 +28,10 @@ export default function Sidebar() {
             <Link
               key={item.label}
               href={item.href}
-              className={`flex flex-col items-center justify-center w-12 h-12 rounded-xl transition-colors ${
-                isActive
+              className={`flex flex-col items-center justify-center w-12 h-12 rounded-xl transition-colors ${isActive
                   ? "bg-primary-light text-primary"
                   : "text-text-secondary hover:bg-gray-100"
-              }`}
+                }`}
               title={item.label}
             >
               <span className="material-symbols-outlined text-[22px]">{item.icon}</span>

@@ -1,14 +1,16 @@
 "use client";
 
-import type { Patient } from "@/types";
+import type { Patient, Vitals } from "@/types";
 
 interface PatientProfileProps {
   patient: Patient;
 }
 
 export default function PatientProfile({ patient }: PatientProfileProps) {
-  const vitals = patient.vitals;
-  const bmi = (patient.weight_kg / ((patient.height_cm / 100) ** 2)).toFixed(1);
+  const vitals = patient.vitals || {} as Vitals;
+  const bmi = patient.height_cm && patient.weight_kg
+    ? (patient.weight_kg / ((patient.height_cm / 100) ** 2)).toFixed(1)
+    : "--";
 
   return (
     <div className="bg-surface rounded-2xl border border-border-light shadow-sm overflow-hidden">
@@ -71,7 +73,7 @@ export default function PatientProfile({ patient }: PatientProfileProps) {
       <div className="px-5 py-4 border-b border-border-light">
         <h3 className="text-xs font-bold text-text-secondary uppercase tracking-wide mb-3">Conditions</h3>
         <div className="flex flex-wrap gap-2">
-          {patient.conditions.map((cond) => (
+          {(patient.conditions || []).map((cond) => (
             <span key={cond} className="px-2.5 py-1 bg-primary-light text-primary text-xs font-medium rounded-lg">
               {cond}
             </span>
@@ -83,7 +85,7 @@ export default function PatientProfile({ patient }: PatientProfileProps) {
       <div className="px-5 py-4 border-b border-border-light">
         <h3 className="text-xs font-bold text-text-secondary uppercase tracking-wide mb-3">Medications</h3>
         <ul className="space-y-1.5">
-          {patient.medications.map((med) => (
+          {(patient.medications || []).map((med) => (
             <li key={med} className="flex items-start gap-2 text-xs text-text-primary">
               <span className="material-symbols-outlined text-primary text-[14px] mt-0.5">medication</span>
               {med}
@@ -96,7 +98,7 @@ export default function PatientProfile({ patient }: PatientProfileProps) {
       <div className="px-5 py-4">
         <h3 className="text-xs font-bold text-text-secondary uppercase tracking-wide mb-3">Allergies</h3>
         <div className="flex flex-wrap gap-2">
-          {patient.allergies.map((allergy) => (
+          {(patient.allergies || []).map((allergy) => (
             <span key={allergy} className="px-2.5 py-1 bg-red-50 text-danger text-xs font-medium rounded-lg">
               ⚠ {allergy}
             </span>
