@@ -74,7 +74,7 @@ export default function TodayAppointments() {
             appointments.map((apt) => (
               <button
                 key={apt.id}
-                onClick={() => router.push(`/patient/${apt.patient_id}?appointment=${apt.id}`)}
+                onClick={() => router.push(`/appointment/${apt.id}`)}
                 className="w-full text-left px-5 py-4 hover:bg-gray-50 transition flex items-center gap-4"
               >
                 <div className="w-10 h-10 rounded-full bg-primary-light flex items-center justify-center text-primary font-semibold text-sm">
@@ -90,10 +90,10 @@ export default function TodayAppointments() {
                   <p className="text-sm font-semibold text-text-primary">{formatTime(apt.start_time)}</p>
                   <span
                     className={`inline-block text-xs font-medium px-2 py-0.5 rounded-full mt-0.5 ${apt.status === "completed"
-                        ? "bg-green-100 text-green-700"
-                        : apt.status === "scheduled"
-                          ? "bg-primary-light text-primary"
-                          : "bg-gray-100 text-text-secondary"
+                      ? "bg-green-100 text-green-700"
+                      : apt.status === "scheduled"
+                        ? "bg-primary-light text-primary"
+                        : "bg-gray-100 text-text-secondary"
                       }`}
                   >
                     {apt.status === "scheduled" ? "Scheduled" : apt.status.charAt(0).toUpperCase() + apt.status.slice(1)}

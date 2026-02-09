@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { startConsult, stopConsult } from "@/lib/api";
+import { useEffect, useState, useCallback } from "react";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { startConsult, saveConsultDump } from "@/lib/api";
+import { useConsultTranscription } from "@/hooks/useConsultTranscription";
 import type { ConsultInsights } from "@/types";
 import RecordingControls from "@/components/consult/RecordingControls";
 import TranscriptInput from "@/components/consult/TranscriptInput";
@@ -11,80 +12,74 @@ import ConsultResults from "@/components/consult/ConsultResults";
 export default function ConsultPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const patientId = params.id as string;
+  const appointmentId = searchParams.get("appointment") || undefined;
 
   const [sessionId, setSessionId] = useState<string | null>(null);
-  const [isRecording, setIsRecording] = useState(false);
-  const [elapsed, setElapsed] = useState(0);
-  const [transcript, setTranscript] = useState("");
+  const [manualNotes, setManualNotes] = useState("");
   const [insights, setInsights] = useState<ConsultInsights | null>(null);
-  const [processing, setProcessing] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setInterval>>(null);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Start session on mount
+  const transcription = useConsultTranscription();
+
+  // Start consult session on mount
   useEffect(() => {
     async function init() {
       try {
         const data = await startConsult(patientId);
         setSessionId(data.consult_session_id);
       } catch {
-        // Session will work without backend for demo
         setSessionId("demo-session");
       }
     }
     init();
   }, [patientId]);
 
-  // Timer
-  useEffect(() => {
-    if (isRecording) {
-      timerRef.current = setInterval(() => setElapsed((e) => e + 1), 1000);
-    } else if (timerRef.current) {
-      clearInterval(timerRef.current);
-    }
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [isRecording]);
-
   const handleToggleRecording = useCallback(async () => {
-    if (!isRecording) {
-      setIsRecording(true);
-      return;
+    if (transcription.status === "idle" || transcription.status === "error") {
+      if (!sessionId) return;
+      setError(null);
+      await transcription.start(sessionId);
+    } else if (transcription.status === "recording") {
+      transcription.stop();
     }
+  }, [transcription, sessionId]);
 
-    // Stop recording → analyze
-    setIsRecording(false);
-    if (!transcript.trim()) return;
+  const handleSaveAndAnalyze = useCallback(async () => {
+    if (!sessionId || !transcription.dumpId) return;
+    const hasContent = transcription.transcript.trim() || manualNotes.trim();
+    if (!hasContent) return;
 
-    setProcessing(true);
+    setSaving(true);
+    setError(null);
     try {
-      const data = await stopConsult(sessionId || "demo", transcript);
-      setInsights(data.insights);
-    } catch {
-      // Fallback for demo without backend
-      setInsights({
-        clean_transcript: transcript,
-        soap: {
-          subjective: "Unable to analyze — backend unavailable. Please ensure the backend is running.",
-          objective: "N/A",
-          assessment: "N/A",
-          plan: "N/A",
-        },
-        extracted_facts: {
-          symptoms: [],
-          duration: "",
-          medications_discussed: [],
-          allergies_mentioned: [],
-        },
-        follow_up_questions: ["Connect to the backend API for full AI analysis."],
-        differential_suggestions: [],
-        disclaimer: "AI analysis was unavailable. Please document manually.",
-      });
+      const result = await saveConsultDump(
+        sessionId,
+        transcription.dumpId,
+        manualNotes,
+        appointmentId,
+        true
+      );
+      if (result.insights) {
+        setInsights(result.insights);
+      }
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Failed to save and analyze"
+      );
     } finally {
-      setProcessing(false);
+      setSaving(false);
     }
-  }, [isRecording, transcript, sessionId]);
+  }, [sessionId, transcription.dumpId, transcription.transcript, manualNotes, appointmentId]);
+
+  const isRecording = transcription.status === "recording";
+  const canSave =
+    transcription.status === "idle" &&
+    transcription.dumpId &&
+    (transcription.transcript.trim() || manualNotes.trim()) &&
+    !insights;
 
   return (
     <div className="p-6 pb-24">
@@ -95,38 +90,56 @@ export default function ConsultPage() {
             onClick={() => router.push(`/patient/${patientId}`)}
             className="flex items-center gap-1 text-text-secondary hover:text-text-primary transition text-sm"
           >
-            <span className="material-symbols-outlined text-[20px]">arrow_back</span>
+            <span className="material-symbols-outlined text-[20px]">
+              arrow_back
+            </span>
             Back
           </button>
           <div>
-            <h1 className="text-lg font-bold text-text-primary">Consult Session</h1>
-            <p className="text-xs text-text-secondary">Patient: Sarah Jenkins • Session: {sessionId || "..."}</p>
+            <h1 className="text-lg font-bold text-text-primary">
+              Consult Session
+            </h1>
+            <p className="text-xs text-text-secondary">
+              Patient: {patientId} &bull; Session: {sessionId || "..."}
+            </p>
           </div>
         </div>
 
         <RecordingControls
-          isRecording={isRecording}
+          transcriptionStatus={transcription.status}
           onToggle={handleToggleRecording}
-          elapsed={elapsed}
+          elapsed={transcription.elapsedSeconds}
         />
       </div>
 
+      {/* Error display */}
+      {(error || transcription.error) && (
+        <div className="mb-4 bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-700">
+          {error || transcription.error}
+        </div>
+      )}
+
       {/* Content */}
       <div className="grid grid-cols-2 gap-5">
-        {/* Left: Transcript */}
+        {/* Left: Transcript + Notes */}
         <TranscriptInput
-          value={transcript}
-          onChange={setTranscript}
+          transcript={transcription.transcript}
+          manualNotes={manualNotes}
+          onManualNotesChange={setManualNotes}
           isRecording={isRecording}
         />
 
         {/* Right: Results */}
         <div>
-          {processing ? (
+          {saving ? (
             <div className="bg-surface rounded-2xl border border-border-light shadow-sm p-8 text-center">
               <div className="animate-spin w-8 h-8 border-3 border-primary border-t-transparent rounded-full mx-auto mb-4" />
-              <p className="text-sm font-semibold text-text-primary">Analyzing consultation...</p>
-              <p className="text-xs text-text-secondary mt-1">Generating SOAP note and insights</p>
+              <p className="text-sm font-semibold text-text-primary">
+                Analyzing consultation...
+              </p>
+              <p className="text-xs text-text-secondary mt-1">
+                Generating SOAP note and insights
+              </p>
             </div>
           ) : insights ? (
             <ConsultResults insights={insights} />
@@ -136,13 +149,32 @@ export default function ConsultPage() {
                 {isRecording ? "graphic_eq" : "mic"}
               </span>
               <p className="text-sm font-semibold text-text-primary">
-                {isRecording ? "Recording in progress..." : "Ready to start"}
+                {isRecording
+                  ? "Recording in progress..."
+                  : transcription.transcript
+                    ? "Recording complete"
+                    : "Ready to start"}
               </p>
               <p className="text-xs text-text-secondary mt-1 max-w-xs">
                 {isRecording
-                  ? "AI analysis will begin when you stop the recording"
-                  : "Click 'Start Recording' and speak or paste a transcript. Stop when done to see AI analysis."}
+                  ? "Live transcript appears on the left. Stop recording when done."
+                  : transcription.transcript
+                    ? "Add manual notes if needed, then click Save & Analyze."
+                    : "Click 'Start Recording' to begin live transcription via Gemini."}
               </p>
+
+              {/* Save & Analyze button */}
+              {canSave && (
+                <button
+                  onClick={handleSaveAndAnalyze}
+                  className="mt-6 flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-full text-sm font-semibold hover:bg-primary-dark transition shadow-lg"
+                >
+                  <span className="material-symbols-outlined text-[20px]">
+                    psychology
+                  </span>
+                  Save & Analyze
+                </button>
+              )}
             </div>
           )}
         </div>

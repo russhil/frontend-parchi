@@ -4,7 +4,7 @@ import Sidebar from "@/components/layout/Sidebar";
 import Header from "@/components/layout/Header";
 
 export const metadata: Metadata = {
-  title: "ClinicOS — AI Medical Records",
+  title: "Parchi.ai — AI Medical Records",
   description: "AI-powered medical record system for small clinics",
 };
 
@@ -14,7 +14,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -39,11 +39,13 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="antialiased font-sans">
+      <body className="antialiased font-sans flex min-h-screen bg-bg">
         <Sidebar />
-        <div className="ml-[72px] min-h-screen flex flex-col">
+        <div className="ml-[72px] flex-1 flex flex-col min-w-0">
           <Header />
-          <main className="flex-1">{children}</main>
+          <main className="flex-1 p-6 overflow-auto">
+            {children}
+          </main>
         </div>
       </body>
     </html>

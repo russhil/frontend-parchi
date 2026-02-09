@@ -112,7 +112,7 @@ export default function AppointmentsPage() {
                     {filteredAppointments.map((apt) => (
                         <div
                             key={apt.id}
-                            onClick={() => router.push(`/patient/${apt.patient_id}`)}
+                            onClick={() => router.push(`/appointment/${apt.id}`)}
                             className="bg-surface rounded-xl border border-border-light shadow-sm p-4 hover:shadow-md transition cursor-pointer"
                         >
                             <div className="flex items-center gap-4">

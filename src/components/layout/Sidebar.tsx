@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const navItems = [
   { icon: "home", label: "Home", href: "/" },
@@ -12,12 +12,20 @@ const navItems = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleSignOut = () => {
+    // Clear the auth cookie
+    document.cookie = "auth_token=; path=/; max-age=0; SameSite=Lax";
+    router.push("/login");
+    router.refresh();
+  };
 
   return (
     <aside className="fixed left-0 top-0 h-screen w-[72px] bg-surface border-r border-border-light flex flex-col items-center py-4 z-50">
       {/* Logo */}
       <Link href="/" className="mb-8 flex items-center justify-center w-10 h-10 rounded-xl bg-primary text-white font-bold text-lg">
-        C
+        P
       </Link>
 
       {/* Nav Items */}
@@ -41,10 +49,19 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* Doctor Avatar */}
-      <div className="mt-auto">
-        <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-sm">
-          DP
+      {/* Bottom Actions */}
+      <div className="mt-auto flex flex-col gap-4 items-center">
+        <button
+          onClick={handleSignOut}
+          className="flex flex-col items-center justify-center w-12 h-12 rounded-xl text-text-secondary hover:bg-red-50 hover:text-red-600 transition-colors"
+          title="Sign Out"
+        >
+          <span className="material-symbols-outlined text-[22px]">logout</span>
+          <span className="text-[10px] mt-0.5 font-medium">Log out</span>
+        </button>
+
+        <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-sm mb-2">
+          YC
         </div>
       </div>
     </aside>

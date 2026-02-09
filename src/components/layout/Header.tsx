@@ -25,7 +25,7 @@ export default function Header() {
   return (
     <header className="h-16 bg-surface border-b border-border-light flex items-center justify-between px-6">
       <div className="flex items-center gap-3">
-        <h1 className="text-lg font-bold text-text-primary">ClinicOS</h1>
+        <h1 className="text-lg font-bold text-text-primary">Parchi.ai</h1>
         <span className="text-xs font-medium text-text-secondary bg-primary-light text-primary px-2 py-0.5 rounded-full">
           AI-Powered
         </span>
@@ -53,10 +53,10 @@ export default function Header() {
         </button>
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-xs font-semibold">
-            DP
+            YC
           </div>
           <div className="hidden sm:block">
-            <p className="text-sm font-semibold leading-tight">Dr. Prerna</p>
+            <p className="text-sm font-semibold leading-tight">YC</p>
             <p className="text-xs text-text-secondary leading-tight">General Physician</p>
           </div>
         </div>

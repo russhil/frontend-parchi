@@ -28,7 +28,9 @@ export default function DifferentialDiagnosis({ items: initialItems, patientId }
     }
   };
 
-  const currentItems = items || [];
+  const currentItems = (items || []).filter(item => item.condition && item.condition.trim() !== "" && item.match_pct != null);
+
+  if (currentItems.length === 0) return null;
 
   return (
     <div className="bg-surface rounded-2xl border border-border-light shadow-sm overflow-hidden flex flex-col h-full">
@@ -65,7 +67,7 @@ export default function DifferentialDiagnosis({ items: initialItems, patientId }
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-primary" />
                   <span className="text-[14px] font-semibold text-text-primary">
-                    {item.condition_name || item.condition}
+                    {item.condition}
                   </span>
                 </div>
                 <span className={`text-[12px] font-bold ${item.match_pct >= 80 ? 'text-primary' : 'text-slate-500'}`}>
@@ -73,7 +75,7 @@ export default function DifferentialDiagnosis({ items: initialItems, patientId }
                 </span>
               </div>
               <p className="text-[11px] text-text-secondary leading-relaxed pl-4">
-                {item.rationale}
+                {item.reasoning}
               </p>
             </div>
           ))

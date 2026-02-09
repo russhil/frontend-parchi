@@ -131,6 +131,7 @@ export default function FloatingActionBar({
       <VoiceRecordingPanel
         patientId={patientId}
         patientName={patientName}
+        appointmentId={appointmentId}
         isOpen={showRecording}
         onClose={() => setShowRecording(false)}
         onComplete={onRefresh}

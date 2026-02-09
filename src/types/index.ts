@@ -29,6 +29,7 @@ export interface Appointment {
   start_time: string;
   status: string;
   reason: string;
+  vitals?: Vitals;
 }
 
 export interface SOAPNote {
@@ -54,6 +55,7 @@ export interface Document {
   doc_type: string;
   uploaded_at: string;
   extracted_text: string;
+  file_url?: string;
 }
 
 export interface AIIntakeSummary {
@@ -115,6 +117,7 @@ export interface ConsultInsights {
 export interface PatientPageData {
   patient: Patient;
   appointments: Appointment[];
+  appointments_summary: AppointmentSummary[];
   visits: Visit[];
   documents: Document[];
   consult_sessions: ConsultSession[];
@@ -129,7 +132,40 @@ export interface SearchResult {
   matched_snippets: string[];
 }
 
+export interface ClinicalDump {
+  id: string;
+  patient_id: string;
+  appointment_id: string | null;
+  consult_session_id: string | null;
+  transcript_text: string | null;
+  manual_notes: string | null;
+  combined_dump: string | null;
+  dump_metadata: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface ChatMessage {
   role: "user" | "assistant";
   content: string;
+}
+
+// Appointment page data (for /appointment/[id] route)
+export interface AppointmentPageData {
+  appointment: Appointment;
+  patient: Patient;
+  ai_intake_summary: AIIntakeSummary | null;
+  differential_diagnosis: DifferentialItem[];
+  documents: Document[];
+  clinical_dumps: ClinicalDump[];
+  report_insights: ReportInsights | null;
+  is_archived: boolean;
+}
+
+// Minimal appointment info for patient page list
+export interface AppointmentSummary {
+  id: string;
+  start_time: string;
+  status: string;
+  reason: string;
 }
