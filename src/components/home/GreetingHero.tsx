@@ -1,6 +1,14 @@
 "use client";
 
+import { useState } from "react";
+import dynamic from "next/dynamic";
+
+// Dynamically import to avoid SSR issues with audio APIs
+const GeminiLiveChat = dynamic(() => import("./GeminiLiveChat"), { ssr: false });
+
 export default function GreetingHero() {
+  const [showVoiceChat, setShowVoiceChat] = useState(false);
+
   return (
     <div className="text-center mb-8">
       <h2 className="text-3xl font-bold text-text-primary mb-2">
@@ -11,7 +19,10 @@ export default function GreetingHero() {
       </p>
 
       <div className="flex items-center justify-center gap-4 mt-6">
-        <button className="flex items-center gap-3 px-6 py-3.5 bg-primary text-white rounded-2xl font-semibold text-sm hover:bg-primary-dark transition shadow-md">
+        <button
+          onClick={() => setShowVoiceChat(true)}
+          className="flex items-center gap-3 px-6 py-3.5 bg-primary text-white rounded-2xl font-semibold text-sm hover:bg-primary-dark transition shadow-md"
+        >
           <span className="material-symbols-outlined text-[22px]">mic</span>
           Talk to Me
         </button>
@@ -20,6 +31,10 @@ export default function GreetingHero() {
           Chat with AI
         </button>
       </div>
+
+      {showVoiceChat && (
+        <GeminiLiveChat onClose={() => setShowVoiceChat(false)} />
+      )}
     </div>
   );
 }

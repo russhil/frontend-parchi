@@ -82,7 +82,10 @@ export default function AppointmentsPage() {
                             {appointments.length} total appointments
                         </p>
                     </div>
-                    <button className="flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-xl text-sm font-semibold hover:bg-primary-dark transition shadow-sm">
+                    <button
+                        onClick={() => router.push("/appointments/add")}
+                        className="flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-xl text-sm font-semibold hover:bg-primary-dark transition shadow-sm"
+                    >
                         <span className="material-symbols-outlined text-[20px]">add_circle</span>
                         New Appointment
                     </button>
@@ -95,8 +98,8 @@ export default function AppointmentsPage() {
                             key={f}
                             onClick={() => setFilter(f)}
                             className={`px-4 py-2 rounded-xl text-sm font-medium transition ${filter === f
-                                    ? "bg-primary text-white"
-                                    : "bg-surface border border-border-light text-text-secondary hover:bg-gray-50"
+                                ? "bg-primary text-white"
+                                : "bg-surface border border-border-light text-text-secondary hover:bg-gray-50"
                                 }`}
                         >
                             {f.charAt(0).toUpperCase() + f.slice(1)}
@@ -141,12 +144,12 @@ export default function AppointmentsPage() {
                                 <div>
                                     <span
                                         className={`px-3 py-1 rounded-full text-xs font-medium ${apt.status === "completed"
-                                                ? "bg-green-100 text-green-700"
-                                                : apt.status === "cancelled"
-                                                    ? "bg-red-100 text-red-700"
-                                                    : isToday(apt.start_time)
-                                                        ? "bg-primary-light text-primary"
-                                                        : "bg-gray-100 text-text-secondary"
+                                            ? "bg-green-100 text-green-700"
+                                            : apt.status === "cancelled"
+                                                ? "bg-red-100 text-red-700"
+                                                : isToday(apt.start_time)
+                                                    ? "bg-primary-light text-primary"
+                                                    : "bg-gray-100 text-text-secondary"
                                             }`}
                                     >
                                         {apt.status === "scheduled" && isToday(apt.start_time)
