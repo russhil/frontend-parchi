@@ -4,6 +4,21 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getPatients } from "@/lib/api";
 import type { Patient } from "@/types";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Users, Plus, Mic, Search } from "lucide-react";
 
 export default function PatientsPage() {
     const router = useRouter();
@@ -31,154 +46,150 @@ export default function PatientsPage() {
         p.id.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
+    const getInitials = (name: string) =>
+        name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
+
     if (loading) {
         return (
-            <div className="p-6">
-                <div className="max-w-6xl mx-auto">
-                    <div className="animate-pulse space-y-4">
-                        <div className="h-8 bg-gray-200 rounded w-48" />
-                        <div className="h-12 bg-gray-200 rounded" />
-                        {[1, 2, 3, 4, 5].map((i) => (
-                            <div key={i} className="h-20 bg-gray-200 rounded" />
-                        ))}
-                    </div>
+            <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                    <Skeleton className="h-8 w-32" />
+                    <Skeleton className="h-10 w-36" />
                 </div>
+                <Skeleton className="h-10 w-full" />
+                <Card>
+                    <CardContent className="p-0">
+                        {[1, 2, 3, 4, 5].map((i) => (
+                            <div key={i} className="flex items-center gap-4 p-4 border-b border-border last:border-0">
+                                <Skeleton className="h-10 w-10 rounded-full" />
+                                <div className="space-y-2 flex-1">
+                                    <Skeleton className="h-4 w-32" />
+                                    <Skeleton className="h-3 w-24" />
+                                </div>
+                            </div>
+                        ))}
+                    </CardContent>
+                </Card>
             </div>
         );
     }
 
     return (
-        <div className="p-6">
-            <div className="max-w-6xl mx-auto">
-                {/* Header */}
-                <div className="flex items-center justify-between mb-6">
-                    <div>
-                        <h1 className="text-2xl font-bold text-text-primary">Patients</h1>
-                        <p className="text-sm text-text-secondary mt-1">
-                            {patients.length} patients registered
-                        </p>
-                    </div>
-                    <button
-                        onClick={() => router.push("/patients/add")}
-                        className="flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-xl text-sm font-semibold hover:bg-primary-dark transition shadow-sm"
-                    >
-                        <span className="material-symbols-outlined text-[20px]">person_add</span>
-                        Add Patient
-                    </button>
+        <div className="space-y-6">
+            {/* Header */}
+            <div className="flex items-center justify-between">
+                <div>
+                    <h1 className="text-2xl font-bold">Patients</h1>
+                    <p className="text-sm text-muted-foreground mt-1">
+                        {patients.length} patients registered
+                    </p>
                 </div>
-
-                {/* Search */}
-                <div className="relative mb-6">
-                    <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary">
-                        search
-                    </span>
-                    <input
-                        type="text"
-                        placeholder="Search by name, condition, or ID..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-12 pr-4 py-3 bg-surface rounded-xl border border-border-light text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition"
-                    />
-                </div>
-
-                {/* Patient List */}
-                <div className="bg-surface rounded-2xl border border-border-light shadow-sm overflow-hidden">
-                    {/* Table Header */}
-                    <div className="grid grid-cols-12 gap-4 px-5 py-3 bg-bg border-b border-border-light text-xs font-semibold text-text-secondary uppercase tracking-wide">
-                        <div className="col-span-3">Patient</div>
-                        <div className="col-span-2">Age / Gender</div>
-                        <div className="col-span-3">Conditions</div>
-                        <div className="col-span-2">Last Visit</div>
-                        <div className="col-span-2 text-right">Actions</div>
-                    </div>
-
-                    {/* Patient Rows */}
-                    <div className="divide-y divide-border-light">
-                        {filteredPatients.map((patient) => (
-                            <div
-                                key={patient.id}
-                                className="grid grid-cols-12 gap-4 px-5 py-4 hover:bg-gray-50 transition cursor-pointer"
-                                onClick={() => router.push(`/patient/${patient.id}`)}
-                            >
-                                {/* Patient Info */}
-                                <div className="col-span-3 flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-primary-light flex items-center justify-center text-primary font-semibold text-sm">
-                                        {patient.name.split(" ").map((n) => n[0]).join("")}
-                                    </div>
-                                    <div>
-                                        <p className="text-sm font-semibold text-text-primary">{patient.name}</p>
-                                        <p className="text-xs text-text-secondary">{patient.phone}</p>
-                                    </div>
-                                </div>
-
-                                {/* Age / Gender */}
-                                <div className="col-span-2 flex items-center">
-                                    <p className="text-sm text-text-primary">
-                                        {patient.age}y, {patient.gender?.charAt(0)}
-                                    </p>
-                                </div>
-
-                                {/* Conditions */}
-                                <div className="col-span-3 flex items-center gap-1 flex-wrap">
-                                    {patient.conditions?.slice(0, 2).map((cond) => (
-                                        <span
-                                            key={cond}
-                                            className="px-2 py-0.5 bg-primary-light text-primary text-xs font-medium rounded-lg"
-                                        >
-                                            {cond}
-                                        </span>
-                                    ))}
-                                    {patient.conditions?.length > 2 && (
-                                        <span className="text-xs text-text-secondary">
-                                            +{patient.conditions.length - 2}
-                                        </span>
-                                    )}
-                                </div>
-
-                                {/* Last Visit */}
-                                <div className="col-span-2 flex items-center">
-                                    <p className="text-sm text-text-secondary">—</p>
-                                </div>
-
-                                {/* Actions */}
-                                <div className="col-span-2 flex items-center justify-end gap-2">
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            router.push(`/consult/${patient.id}`);
-                                        }}
-                                        className="p-2 rounded-lg hover:bg-primary-light text-text-secondary hover:text-primary transition"
-                                        title="Start Consult"
-                                    >
-                                        <span className="material-symbols-outlined text-[20px]">mic</span>
-                                    </button>
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            router.push(`/patient/${patient.id}`);
-                                        }}
-                                        className="p-2 rounded-lg hover:bg-gray-100 text-text-secondary hover:text-text-primary transition"
-                                        title="View Details"
-                                    >
-                                        <span className="material-symbols-outlined text-[20px]">visibility</span>
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
-
-                        {filteredPatients.length === 0 && (
-                            <div className="px-5 py-12 text-center">
-                                <span className="material-symbols-outlined text-gray-300 text-[48px] mb-3 block">
-                                    person_search
-                                </span>
-                                <p className="text-sm text-text-secondary">
-                                    {searchQuery ? `No patients matching "${searchQuery}"` : "No patients found"}
-                                </p>
-                            </div>
-                        )}
-                    </div>
-                </div>
+                <Button onClick={() => router.push("/patients/new")} className="gap-2">
+                    <Plus className="h-4 w-4" />
+                    Add Patient
+                </Button>
             </div>
+
+            {/* Search */}
+            <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                    placeholder="Search by name, condition, or ID..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10"
+                />
+            </div>
+
+            {/* Patient Table */}
+            <Card>
+                <CardHeader className="pb-0">
+                    <CardTitle className="flex items-center gap-2 text-base">
+                        <Users className="h-5 w-5" />
+                        Patient List
+                        {filteredPatients.length > 0 && (
+                            <Badge variant="secondary" className="ml-2">
+                                {filteredPatients.length}
+                            </Badge>
+                        )}
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="p-0 mt-4">
+                    {filteredPatients.length === 0 ? (
+                        <div className="text-center py-12 text-muted-foreground">
+                            <Users className="h-10 w-10 mx-auto mb-3 opacity-40" />
+                            <p className="text-sm">
+                                {searchQuery ? `No patients matching "${searchQuery}"` : "No patients found"}
+                            </p>
+                        </div>
+                    ) : (
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Patient</TableHead>
+                                    <TableHead>Age / Gender</TableHead>
+                                    <TableHead>Conditions</TableHead>
+                                    <TableHead>Contact</TableHead>
+                                    <TableHead className="text-right">Actions</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {filteredPatients.map((patient) => (
+                                    <TableRow
+                                        key={patient.id}
+                                        className="cursor-pointer"
+                                        onClick={() => router.push(`/patient/${patient.id}`)}
+                                    >
+                                        <TableCell>
+                                            <div className="flex items-center gap-3">
+                                                <Avatar className="h-9 w-9">
+                                                    <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
+                                                        {getInitials(patient.name)}
+                                                    </AvatarFallback>
+                                                </Avatar>
+                                                <span className="font-medium">{patient.name}</span>
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className="text-muted-foreground">
+                                            {patient.age ? `${patient.age}y` : "—"}{patient.gender ? `, ${patient.gender.charAt(0)}` : ""}
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className="flex items-center gap-1 flex-wrap">
+                                                {patient.conditions?.filter(Boolean).slice(0, 2).map((c) => (
+                                                    <Badge key={c} variant="secondary" className="text-xs">
+                                                        {c}
+                                                    </Badge>
+                                                ))}
+                                                {(patient.conditions?.filter(Boolean).length || 0) > 2 && (
+                                                    <span className="text-xs text-muted-foreground">
+                                                        +{patient.conditions.filter(Boolean).length - 2}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className="text-muted-foreground text-sm">
+                                            {patient.phone || "—"}
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    router.push(`/consult/${patient.id}`);
+                                                }}
+                                                title="Start Consult"
+                                            >
+                                                <Mic className="h-4 w-4" />
+                                            </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    )}
+                </CardContent>
+            </Card>
         </div>
     );
 }

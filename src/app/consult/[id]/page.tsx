@@ -8,6 +8,8 @@ import type { ConsultInsights } from "@/types";
 import RecordingControls from "@/components/consult/RecordingControls";
 import TranscriptInput from "@/components/consult/TranscriptInput";
 import ConsultResults from "@/components/consult/ConsultResults";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, Loader2, Brain, Save, AlertCircle } from "lucide-react";
 
 export default function ConsultPage() {
   const params = useParams();
@@ -82,45 +84,46 @@ export default function ConsultPage() {
     !insights;
 
   return (
-    <div className="p-6 pb-24">
+    <div className="-m-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => router.push(`/patient/${patientId}`)}
-            className="flex items-center gap-1 text-text-secondary hover:text-text-primary transition text-sm"
-          >
-            <span className="material-symbols-outlined text-[20px]">
-              arrow_back
-            </span>
-            Back
-          </button>
-          <div>
-            <h1 className="text-lg font-bold text-text-primary">
-              Consult Session
-            </h1>
-            <p className="text-xs text-text-secondary">
-              Patient: {patientId} &bull; Session: {sessionId || "..."}
-            </p>
+      <div className="border-b border-border bg-card px-6 py-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-2"
+              onClick={() => router.push(`/patient/${patientId}`)}
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back
+            </Button>
+            <div>
+              <h1 className="text-lg font-bold">Consult Session</h1>
+              <p className="text-xs text-muted-foreground">
+                Patient: {patientId} &bull; Session: {sessionId || "..."}
+              </p>
+            </div>
           </div>
-        </div>
 
-        <RecordingControls
-          transcriptionStatus={transcription.status}
-          onToggle={handleToggleRecording}
-          elapsed={transcription.elapsedSeconds}
-        />
+          <RecordingControls
+            transcriptionStatus={transcription.status}
+            onToggle={handleToggleRecording}
+            elapsed={transcription.elapsedSeconds}
+          />
+        </div>
       </div>
 
       {/* Error display */}
       {(error || transcription.error) && (
-        <div className="mb-4 bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-700">
+        <div className="mx-6 mt-4 bg-destructive/10 border border-destructive/20 rounded-lg px-4 py-3 text-sm text-destructive flex items-center gap-2">
+          <AlertCircle className="h-4 w-4 flex-shrink-0" />
           {error || transcription.error}
         </div>
       )}
 
       {/* Content */}
-      <div className="grid grid-cols-2 gap-5">
+      <div className="grid grid-cols-2 gap-5 p-6">
         {/* Left: Transcript + Notes */}
         <TranscriptInput
           transcript={transcription.transcript}
@@ -132,30 +135,45 @@ export default function ConsultPage() {
         {/* Right: Results */}
         <div>
           {saving ? (
-            <div className="bg-surface rounded-2xl border border-border-light shadow-sm p-8 text-center">
-              <div className="animate-spin w-8 h-8 border-3 border-primary border-t-transparent rounded-full mx-auto mb-4" />
-              <p className="text-sm font-semibold text-text-primary">
+            <div className="bg-card rounded-xl border border-border p-8 text-center">
+              <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-4" />
+              <p className="text-sm font-semibold">
                 Analyzing consultation...
               </p>
-              <p className="text-xs text-text-secondary mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 Generating SOAP note and insights
               </p>
             </div>
           ) : insights ? (
             <ConsultResults insights={insights} />
           ) : (
-            <div className="bg-surface rounded-2xl border border-border-light shadow-sm p-8 text-center h-full flex flex-col items-center justify-center">
-              <span className="material-symbols-outlined text-gray-300 text-[48px] mb-3">
-                {isRecording ? "graphic_eq" : "mic"}
-              </span>
-              <p className="text-sm font-semibold text-text-primary">
+            <div className="bg-card rounded-xl border border-border p-8 text-center h-full flex flex-col items-center justify-center">
+              <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
+                {isRecording ? (
+                  <div className="flex items-center gap-1">
+                    {[...Array(4)].map((_, i) => (
+                      <div
+                        key={i}
+                        className="w-1 bg-primary rounded-full animate-pulse"
+                        style={{
+                          height: `${12 + Math.random() * 16}px`,
+                          animationDelay: `${i * 150}ms`,
+                        }}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <Brain className="h-7 w-7 text-primary" />
+                )}
+              </div>
+              <p className="text-sm font-semibold">
                 {isRecording
                   ? "Recording in progress..."
                   : transcription.transcript
                     ? "Recording complete"
                     : "Ready to start"}
               </p>
-              <p className="text-xs text-text-secondary mt-1 max-w-xs">
+              <p className="text-xs text-muted-foreground mt-1 max-w-xs">
                 {isRecording
                   ? "Live transcript appears on the left. Stop recording when done."
                   : transcription.transcript
@@ -163,17 +181,11 @@ export default function ConsultPage() {
                     : "Click 'Start Recording' to begin live transcription via Gemini."}
               </p>
 
-              {/* Save & Analyze button */}
               {canSave && (
-                <button
-                  onClick={handleSaveAndAnalyze}
-                  className="mt-6 flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-full text-sm font-semibold hover:bg-primary-dark transition shadow-lg"
-                >
-                  <span className="material-symbols-outlined text-[20px]">
-                    psychology
-                  </span>
+                <Button onClick={handleSaveAndAnalyze} className="mt-6 gap-2">
+                  <Brain className="h-4 w-4" />
                   Save & Analyze
-                </button>
+                </Button>
               )}
             </div>
           )}
@@ -183,13 +195,14 @@ export default function ConsultPage() {
       {/* Save & Return */}
       {insights && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40">
-          <button
+          <Button
             onClick={() => router.push(`/patient/${patientId}`)}
-            className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-full text-sm font-semibold hover:bg-primary-dark transition shadow-lg"
+            className="gap-2 shadow-lg"
+            size="lg"
           >
-            <span className="material-symbols-outlined text-[20px]">save</span>
+            <Save className="h-4 w-4" />
             Save & Return to Patient
-          </button>
+          </Button>
         </div>
       )}
     </div>
