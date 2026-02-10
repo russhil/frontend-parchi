@@ -2,6 +2,8 @@
 import { useState } from "react";
 import type { DifferentialItem } from "@/types";
 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
 interface DifferentialDiagnosisProps {
   items: DifferentialItem[];
   patientId: string;
@@ -14,7 +16,7 @@ export default function DifferentialDiagnosis({ items: initialItems, patientId }
   const handleRegenerate = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:8000/ai/generate-differential/${patientId}`, {
+      const res = await fetch(`${API_BASE}/ai/generate-differential/${patientId}`, {
         method: "POST",
       });
       const data = await res.json();

@@ -5,6 +5,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
 export default function LoginPage() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -20,7 +22,7 @@ export default function LoginPage() {
         console.log("Attempting login with:", username);
 
         try {
-            const res = await fetch('http://127.0.0.1:8000/login', {
+            const res = await fetch(`${API_BASE}/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password }),
