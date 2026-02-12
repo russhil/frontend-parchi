@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 
 const navItems = [
@@ -30,8 +31,8 @@ export default function Sidebar() {
       {/* Desktop Sidebar */}
       <aside className="hidden md:flex fixed left-0 top-0 h-screen w-[72px] bg-surface border-r border-border-light flex-col items-center py-4 z-50">
         {/* Logo */}
-        <Link href="/" className="mb-8 flex items-center justify-center w-10 h-10 rounded-xl bg-primary text-white font-bold text-lg">
-          P
+        <Link href="/" className="mb-8 flex items-center justify-center w-10 h-10">
+          <Image src="/logo.png" alt="Parchi" width={40} height={40} className="rounded-xl" />
         </Link>
 
         {/* Nav Items */}

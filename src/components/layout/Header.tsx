@@ -2,6 +2,7 @@
 
 import { useRouter, usePathname } from "next/navigation";
 import { useState } from "react";
+import Image from "next/image";
 import { search } from "@/lib/api";
 
 export default function Header() {
@@ -29,10 +30,7 @@ export default function Header() {
   return (
     <header className="h-14 md:h-16 bg-surface border-b border-border-light flex items-center justify-between px-4 md:px-6">
       <div className="flex items-center gap-2 md:gap-3">
-        <h1 className="text-base md:text-lg font-bold text-text-primary">Parchi.ai</h1>
-        <span className="hidden sm:inline-block text-xs font-medium text-text-secondary bg-primary-light text-primary px-2 py-0.5 rounded-full">
-          AI-Powered
-        </span>
+        <Image src="/logo.png" alt="Parchi" width={36} height={36} className="rounded-lg" />
       </div>
 
       <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-md mx-8">
