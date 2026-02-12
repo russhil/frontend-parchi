@@ -6,7 +6,7 @@ export function middleware(request: NextRequest) {
     const path = request.nextUrl.pathname;
 
     // Define public paths that don't require authentication
-    const isPublicPath = path === '/login';
+    const isPublicPath = path === '/login' || path.startsWith('/intake');
 
     // Check for the auth cookie
     // Note: In a real app, you'd verify the token signature/validity

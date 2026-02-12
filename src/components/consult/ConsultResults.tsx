@@ -3,9 +3,6 @@
 import type { ConsultInsights } from "@/types";
 import SOAPNote from "./SOAPNote";
 import ExtractedFacts from "./ExtractedFacts";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { HelpCircle, Stethoscope, Info, ChevronRight } from "lucide-react";
 
 interface ConsultResultsProps {
   insights: ConsultInsights;
@@ -22,64 +19,55 @@ export default function ConsultResults({ insights }: ConsultResultsProps) {
 
       {/* Follow-up Questions */}
       {insights.follow_up_questions.length > 0 && (
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm flex items-center gap-2">
-              <HelpCircle className="h-4 w-4 text-amber-500" />
-              Follow-up Questions You May Have Missed
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+        <div className="bg-surface rounded-2xl border border-border-light shadow-sm overflow-hidden">
+          <div className="px-5 py-4 border-b border-border-light flex items-center gap-2">
+            <span className="material-symbols-outlined text-warning text-[20px]">help</span>
+            <h3 className="text-sm font-bold text-text-primary">Follow-up Questions You May Have Missed</h3>
+          </div>
+          <div className="px-5 py-4">
             <ul className="space-y-2">
               {insights.follow_up_questions.map((q, i) => (
-                <li key={i} className="flex items-start gap-2 text-sm">
-                  <ChevronRight className="h-4 w-4 text-amber-500 mt-0.5 flex-shrink-0" />
+                <li key={i} className="flex items-start gap-2 text-sm text-text-primary">
+                  <span className="material-symbols-outlined text-warning text-[16px] mt-0.5">arrow_right</span>
                   {q}
                 </li>
               ))}
             </ul>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
 
       {/* Differential Suggestions */}
       {insights.differential_suggestions.length > 0 && (
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm flex items-center gap-2">
-              <Stethoscope className="h-4 w-4 text-primary" />
-              Differential Suggestions
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
+        <div className="bg-surface rounded-2xl border border-border-light shadow-sm overflow-hidden">
+          <div className="px-5 py-4 border-b border-border-light flex items-center gap-2">
+            <span className="material-symbols-outlined text-primary text-[20px]">diagnosis</span>
+            <h3 className="text-sm font-bold text-text-primary">Differential Suggestions</h3>
+          </div>
+          <div className="px-5 py-4 space-y-3">
             {insights.differential_suggestions.map((d, i) => (
               <div key={i} className="flex items-start gap-3">
-                <Badge
-                  variant={
-                    d.likelihood === "high"
-                      ? "default"
-                      : d.likelihood === "medium"
-                        ? "secondary"
-                        : "outline"
-                  }
-                  className="text-[10px] mt-0.5"
-                >
+                <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full ${
+                  d.likelihood === "high" ? "bg-primary-light text-primary" :
+                  d.likelihood === "medium" ? "bg-amber-100 text-amber-700" :
+                  "bg-gray-100 text-text-secondary"
+                }`}>
                   {d.likelihood.toUpperCase()}
-                </Badge>
+                </span>
                 <div>
-                  <p className="text-sm font-semibold">{d.condition}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">{d.reasoning}</p>
+                  <p className="text-sm font-semibold text-text-primary">{d.condition}</p>
+                  <p className="text-xs text-text-secondary mt-0.5">{d.reasoning}</p>
                 </div>
               </div>
             ))}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
 
       {/* Disclaimer */}
-      <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg px-4 py-3">
-        <p className="text-xs text-amber-700 dark:text-amber-400 flex items-center gap-2">
-          <Info className="h-4 w-4 flex-shrink-0" />
+      <div className="bg-amber-50 rounded-2xl border border-amber-200 px-5 py-3">
+        <p className="text-xs text-amber-800 flex items-center gap-2">
+          <span className="material-symbols-outlined text-[16px]">info</span>
           {insights.disclaimer}
         </p>
       </div>

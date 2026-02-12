@@ -86,7 +86,7 @@ export default function GeminiLiveChat({ onClose }: GeminiLiveChatProps) {
     // --- Stop playback ---
     const stopPlayback = useCallback(() => {
         scheduledSourcesRef.current.forEach(s => {
-            try { s.stop(); s.disconnect(); } catch {}
+            try { s.stop(); s.disconnect(); } catch { }
         });
         scheduledSourcesRef.current = [];
         if (audioContextRef.current) {
@@ -333,7 +333,7 @@ export default function GeminiLiveChat({ onClose }: GeminiLiveChatProps) {
             mediaStreamRef.current = null;
         }
         if (audioContextRef.current) {
-            audioContextRef.current.close().catch(() => {});
+            audioContextRef.current.close().catch(() => { });
             audioContextRef.current = null;
         }
         if (wsRef.current) {

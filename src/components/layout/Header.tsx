@@ -1,91 +1,70 @@
 "use client";
 
-import { usePathname } from "next/navigation";
-import { Search } from "lucide-react";
-import { useSidebar } from "@/components/providers/sidebar-provider";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
-
-const routeLabels: Record<string, string> = {
-  "": "Dashboard",
-  patients: "Patients",
-  appointments: "Schedule",
-  schedule: "Schedule",
-  settings: "Settings",
-  patient: "Patient",
-  appointment: "Appointment",
-  consult: "Consult",
-  login: "Login",
-  add: "New",
-  new: "New",
-};
-
-function getBreadcrumbs(pathname: string) {
-  const segments = pathname.split("/").filter(Boolean);
-  if (segments.length === 0) return [{ label: "Dashboard", href: "/" }];
-
-  const crumbs: { label: string; href: string }[] = [
-    { label: "Dashboard", href: "/" },
-  ];
-
-  let path = "";
-  for (const seg of segments) {
-    path += `/${seg}`;
-    const label = routeLabels[seg] || seg;
-    // Skip UUID-like segments in breadcrumb display
-    if (seg.match(/^[0-9a-f-]{8,}$/i)) continue;
-    crumbs.push({ label, href: path });
-  }
-
-  return crumbs;
-}
+import { useRouter, usePathname } from "next/navigation";
+import { useState } from "react";
+import { search } from "@/lib/api";
 
 export default function Header() {
+  const router = useRouter();
   const pathname = usePathname();
-  const { collapsed } = useSidebar();
-  const breadcrumbs = getBreadcrumbs(pathname);
+  const [query, setQuery] = useState("");
 
-  // Don't render header on login page
-  if (pathname === "/login") return null;
+  // Hide header on public pages
+  if (pathname === '/login' || pathname.startsWith('/intake/')) return null;
+
+  const handleSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!query.trim()) return;
+    try {
+      const data = await search(query);
+      if (data.results.length > 0) {
+        router.push(`/patient/${data.results[0].patient_id}?search=${encodeURIComponent(query)}`);
+      }
+    } catch {
+      // In demo mode, navigate to demo patient
+      router.push(`/patient/p1?search=${encodeURIComponent(query)}`);
+    }
+  };
 
   return (
-    <header className="h-14 bg-card/50 backdrop-blur-sm border-b border-border flex items-center justify-between px-6 sticky top-0 z-40">
-      {/* Breadcrumbs */}
-      <nav className="flex items-center gap-1.5 text-sm">
-        {breadcrumbs.map((crumb, i) => (
-          <span key={crumb.href} className="flex items-center gap-1.5">
-            {i > 0 && (
-              <span className="text-muted-foreground">/</span>
-            )}
-            <span
-              className={cn(
-                i === breadcrumbs.length - 1
-                  ? "text-foreground font-medium"
-                  : "text-muted-foreground"
-              )}
-            >
-              {crumb.label}
-            </span>
-          </span>
-        ))}
-      </nav>
+    <header className="h-14 md:h-16 bg-surface border-b border-border-light flex items-center justify-between px-4 md:px-6">
+      <div className="flex items-center gap-2 md:gap-3">
+        <h1 className="text-base md:text-lg font-bold text-text-primary">Parchi.ai</h1>
+        <span className="hidden sm:inline-block text-xs font-medium text-text-secondary bg-primary-light text-primary px-2 py-0.5 rounded-full">
+          AI-Powered
+        </span>
+      </div>
 
-      {/* Search Trigger */}
-      <Button
-        variant="outline"
-        className="h-9 w-64 justify-start text-muted-foreground font-normal gap-2"
-        onClick={() => {
-          // Will be wired to Command Palette in Phase 3
-          document.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true }));
-        }}
-      >
-        <Search className="h-4 w-4" />
-        <span>Search...</span>
-        <kbd className="ml-auto pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
-          <span className="text-xs">⌘</span>K
-        </kbd>
-      </Button>
+      <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-md mx-8">
+        <div className="relative w-full">
+          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary text-[20px]">
+            search
+          </span>
+          <input
+            type="text"
+            placeholder="Search patients, records, diagnoses..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 bg-bg rounded-xl border border-border-light text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition"
+          />
+        </div>
+      </form>
+
+      <div className="flex items-center gap-3 md:gap-4">
+        <button className="relative text-text-secondary hover:text-text-primary transition">
+          <span className="material-symbols-outlined text-[22px] md:text-[24px]">notifications</span>
+          <span className="absolute -top-1 -right-1 w-2 h-2 bg-danger rounded-full" />
+        </button>
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-xs font-semibold">
+            YC
+          </div>
+          <div className="hidden lg:block">
+            <p className="text-sm font-semibold leading-tight">YC</p>
+            <p className="text-xs text-text-secondary leading-tight">General Physician</p>
+          </div>
+        </div>
+      </div>
     </header>
   );
 }

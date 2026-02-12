@@ -1,8 +1,6 @@
 "use client";
 
 import type { TranscriptionStatus } from "@/hooks/useConsultTranscription";
-import { Button } from "@/components/ui/button";
-import { Mic, Square, Loader2 } from "lucide-react";
 
 interface RecordingControlsProps {
   transcriptionStatus: TranscriptionStatus;
@@ -27,35 +25,42 @@ export default function RecordingControls({
 
   return (
     <div className="flex items-center gap-4">
-      <Button
+      <button
         onClick={onToggle}
         disabled={isConnecting || isStopping}
-        variant={isRecording ? "destructive" : "default"}
-        className="gap-2"
+        className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition shadow-md disabled:opacity-50 ${
+          isRecording
+            ? "bg-danger text-white hover:bg-red-600"
+            : isConnecting
+              ? "bg-amber-500 text-white"
+              : "bg-primary text-white hover:bg-primary-dark"
+        }`}
       >
         {isConnecting ? (
           <>
-            <Loader2 className="h-4 w-4 animate-spin" />
+            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
             Connecting...
           </>
         ) : isStopping ? (
           <>
-            <Loader2 className="h-4 w-4 animate-spin" />
+            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
             Stopping...
           </>
         ) : (
           <>
-            {isRecording ? <Square className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+            <span className="material-symbols-outlined text-[20px]">
+              {isRecording ? "stop" : "mic"}
+            </span>
             {isRecording ? "Stop Recording" : "Start Recording"}
           </>
         )}
-      </Button>
+      </button>
 
       <div className="flex items-center gap-2">
         {isRecording && (
-          <span className="w-2.5 h-2.5 bg-destructive rounded-full animate-pulse" />
+          <span className="w-2.5 h-2.5 bg-danger rounded-full animate-pulse" />
         )}
-        <span className="text-lg font-mono font-bold tabular-nums">
+        <span className="text-lg font-mono font-bold text-text-primary">
           {formatTime(elapsed)}
         </span>
       </div>

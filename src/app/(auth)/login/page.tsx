@@ -49,17 +49,17 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="h-full flex items-center justify-center bg-gray-50">
-            <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-xl shadow-lg border border-gray-100">
+        <div className="h-full flex items-center justify-center bg-gray-50 p-4">
+            <div className="max-w-md w-full space-y-6 md:space-y-8 p-6 md:p-8 bg-white rounded-xl shadow-lg border border-gray-100">
                 <div className="text-center">
-                    <h2 className="mt-6 text-3xl font-bold text-gray-900">
+                    <h2 className="mt-4 md:mt-6 text-2xl md:text-3xl font-bold text-gray-900">
                         Welcome to Parchi
                     </h2>
                     <p className="mt-2 text-sm text-gray-600">
                         Please sign in to access your dashboard
                     </p>
                 </div>
-                <form className="mt-8 space-y-6" onSubmit={handleLogin}>
+                <form className="mt-6 md:mt-8 space-y-6" onSubmit={handleLogin}>
                     <div className="rounded-md shadow-sm -space-y-px">
                         <div className="mb-4">
                             <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">

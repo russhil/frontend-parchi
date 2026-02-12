@@ -1,9 +1,6 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
-import { Mic, PenLine } from "lucide-react";
 
 interface TranscriptInputProps {
   transcript: string;
@@ -20,6 +17,7 @@ export default function TranscriptInput({
 }: TranscriptInputProps) {
   const transcriptEndRef = useRef<HTMLDivElement>(null);
 
+  // Auto-scroll transcript during recording
   useEffect(() => {
     if (isRecording && transcriptEndRef.current) {
       transcriptEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -27,26 +25,25 @@ export default function TranscriptInput({
   }, [transcript, isRecording]);
 
   return (
-    <div className="flex flex-col gap-4 h-full">
-      {/* Live Transcript */}
-      <Card className="flex-1 flex flex-col min-h-0">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-sm flex items-center justify-between">
-            <span className="flex items-center gap-2">
-              <Mic className="h-4 w-4 text-primary" />
-              Live Transcript
-            </span>
-            {isRecording && (
-              <span className="flex items-center gap-2">
-                <span className="w-2 h-2 bg-destructive rounded-full animate-pulse" />
-                <span className="text-xs text-destructive font-medium">Recording</span>
-              </span>
-            )}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="flex-1 overflow-y-auto min-h-[200px] max-h-[300px]">
+    <div className="bg-surface rounded-2xl border border-border-light shadow-sm overflow-hidden flex flex-col h-full">
+      {/* Live Transcript Section */}
+      <div className="flex-1 flex flex-col min-h-0">
+        <div className="px-5 py-4 border-b border-border-light flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-primary text-[20px]">subtitles</span>
+            <h3 className="text-sm font-bold text-text-primary">Live Transcript</h3>
+          </div>
+          {isRecording && (
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 bg-danger rounded-full animate-pulse" />
+              <span className="text-xs text-danger font-medium">Recording</span>
+            </div>
+          )}
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-5 min-h-[200px] max-h-[300px]">
           {transcript ? (
-            <div className="text-sm leading-relaxed whitespace-pre-wrap">
+            <div className="text-sm text-text-primary leading-relaxed whitespace-pre-wrap">
               {transcript}
               <div ref={transcriptEndRef} />
             </div>
@@ -66,39 +63,36 @@ export default function TranscriptInput({
                       />
                     ))}
                   </div>
-                  <p className="text-sm text-muted-foreground">Listening for speech...</p>
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <p className="text-sm text-text-secondary">Listening for speech...</p>
+                  <p className="text-xs text-text-secondary mt-1">
                     Speak naturally, transcript will appear here
                   </p>
                 </div>
               ) : (
-                <p className="text-sm text-muted-foreground italic">
+                <p className="text-sm text-text-secondary italic">
                   Transcript will appear here during recording
                 </p>
               )}
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      {/* Manual Notes */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-sm flex items-center gap-2">
-            <PenLine className="h-4 w-4" />
+      {/* Manual Notes Section */}
+      <div className="border-t border-border-light">
+        <div className="px-5 py-3 border-b border-border-light flex items-center gap-2">
+          <span className="material-symbols-outlined text-text-secondary text-[18px]">edit_note</span>
+          <h3 className="text-xs font-bold text-text-secondary uppercase tracking-wider">
             Manual Notes
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Textarea
-            value={manualNotes}
-            onChange={(e) => onManualNotesChange(e.target.value)}
-            placeholder="Add any additional notes here..."
-            rows={5}
-            className="resize-none"
-          />
-        </CardContent>
-      </Card>
+          </h3>
+        </div>
+        <textarea
+          value={manualNotes}
+          onChange={(e) => onManualNotesChange(e.target.value)}
+          placeholder="Add any additional notes here..."
+          className="w-full min-h-[120px] p-5 text-sm text-text-primary leading-relaxed resize-none focus:outline-none"
+        />
+      </div>
     </div>
   );
 }

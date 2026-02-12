@@ -37,22 +37,22 @@ export default function SmartSearch() {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto mb-8">
+    <div className="w-full max-w-2xl mx-auto mb-6 md:mb-8 px-4 md:px-0">
       <form onSubmit={handleSearch} className="relative">
         <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary">
           search
         </span>
         <input
           type="text"
-          placeholder="Search: &quot;migraine patient with elevated CRP&quot; or &quot;Sarah Jenkins&quot;"
+          placeholder="Search patients or conditions..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="w-full pl-12 pr-24 py-3.5 bg-surface rounded-2xl border border-border-light text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition shadow-sm"
+          className="w-full pl-12 pr-20 md:pr-24 py-3 md:py-3.5 bg-surface rounded-2xl border border-border-light text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition shadow-sm"
         />
         <button
           type="submit"
           disabled={loading}
-          className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-2 bg-primary text-white rounded-xl text-sm font-medium hover:bg-primary-dark transition disabled:opacity-50"
+          className="absolute right-2 top-1/2 -translate-y-1/2 px-3 md:px-4 py-2 bg-primary text-white rounded-xl text-xs md:text-sm font-medium hover:bg-primary-dark transition disabled:opacity-50"
         >
           {loading ? "..." : "Search"}
         </button>
@@ -70,13 +70,13 @@ export default function SmartSearch() {
               className="w-full text-left px-4 py-3 hover:bg-gray-50 transition border-b border-border-light last:border-0"
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-primary-light flex items-center justify-center">
+                <div className="w-8 h-8 rounded-full bg-primary-light flex items-center justify-center flex-shrink-0">
                   <span className="material-symbols-outlined text-primary text-[18px]">person</span>
                 </div>
-                <div>
+                <div className="min-w-0 flex-1">
                   <p className="text-sm font-semibold text-text-primary">{result.patient_name}</p>
                   {result.matched_snippets.map((snippet, i) => (
-                    <p key={i} className="text-xs text-text-secondary mt-0.5 line-clamp-1">
+                    <p key={i} className="text-xs text-text-secondary mt-0.5 line-clamp-2">
                       {snippet}
                     </p>
                   ))}

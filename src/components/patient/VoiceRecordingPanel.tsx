@@ -124,7 +124,7 @@ export default function VoiceRecordingPanel({
       />
 
       {/* Panel */}
-      <div className="bg-surface border-t border-border-light shadow-2xl rounded-t-3xl max-h-[80vh] overflow-y-auto animate-in slide-in-from-bottom duration-300">
+      <div className="bg-surface border-t border-border-light shadow-2xl rounded-t-3xl max-h-[80vh] overflow-y-auto animate-in slide-in-from-bottom duration-300 w-full md:max-w-2xl md:mx-auto">
         {/* Header */}
         <div className="sticky top-0 bg-surface z-10 px-6 py-4 border-b border-border-light flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -243,7 +243,7 @@ export default function VoiceRecordingPanel({
                             key={i}
                             className="w-1 bg-primary rounded-full animate-pulse"
                             style={{
-                              height: `${12 + Math.random() * 12}px`,
+                              height: `${12 + (i % 3) * 6}px`,
                               animationDelay: `${i * 100}ms`,
                             }}
                           />

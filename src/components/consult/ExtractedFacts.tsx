@@ -1,9 +1,6 @@
 "use client";
 
 import type { ExtractedFacts as ExtractedFactsType } from "@/types";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { ClipboardCheck, AlertTriangle } from "lucide-react";
 
 interface ExtractedFactsProps {
   facts: ExtractedFactsType;
@@ -11,23 +8,21 @@ interface ExtractedFactsProps {
 
 export default function ExtractedFacts({ facts }: ExtractedFactsProps) {
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <CardTitle className="text-sm flex items-center gap-2">
-          <ClipboardCheck className="h-4 w-4 text-primary" />
-          Extracted Facts
-        </CardTitle>
-      </CardHeader>
+    <div className="bg-surface rounded-2xl border border-border-light shadow-sm overflow-hidden">
+      <div className="px-5 py-4 border-b border-border-light flex items-center gap-2">
+        <span className="material-symbols-outlined text-primary text-[20px]">fact_check</span>
+        <h3 className="text-sm font-bold text-text-primary">Extracted Facts</h3>
+      </div>
 
-      <CardContent className="space-y-4">
+      <div className="px-5 py-4 space-y-4">
         {/* Symptoms */}
         <div>
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Symptoms</p>
+          <p className="text-xs font-bold text-text-secondary uppercase tracking-wide mb-2">Symptoms</p>
           <div className="flex flex-wrap gap-1.5">
             {facts.symptoms.map((s, i) => (
-              <Badge key={i} variant="destructive" className="font-normal">
+              <span key={i} className="px-2.5 py-1 bg-red-50 text-red-700 text-xs font-medium rounded-lg">
                 {s}
-              </Badge>
+              </span>
             ))}
           </div>
         </div>
@@ -35,20 +30,20 @@ export default function ExtractedFacts({ facts }: ExtractedFactsProps) {
         {/* Duration */}
         {facts.duration && (
           <div>
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">Duration</p>
-            <p className="text-sm">{facts.duration}</p>
+            <p className="text-xs font-bold text-text-secondary uppercase tracking-wide mb-1">Duration</p>
+            <p className="text-sm text-text-primary">{facts.duration}</p>
           </div>
         )}
 
         {/* Medications */}
         {facts.medications_discussed.length > 0 && (
           <div>
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Medications Discussed</p>
+            <p className="text-xs font-bold text-text-secondary uppercase tracking-wide mb-2">Medications Discussed</p>
             <div className="flex flex-wrap gap-1.5">
               {facts.medications_discussed.map((m, i) => (
-                <Badge key={i} variant="secondary" className="font-normal">
+                <span key={i} className="px-2.5 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-lg">
                   {m}
-                </Badge>
+                </span>
               ))}
             </div>
           </div>
@@ -57,18 +52,17 @@ export default function ExtractedFacts({ facts }: ExtractedFactsProps) {
         {/* Allergies */}
         {facts.allergies_mentioned.length > 0 && (
           <div>
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Allergies Mentioned</p>
+            <p className="text-xs font-bold text-text-secondary uppercase tracking-wide mb-2">Allergies Mentioned</p>
             <div className="flex flex-wrap gap-1.5">
               {facts.allergies_mentioned.map((a, i) => (
-                <Badge key={i} variant="outline" className="font-normal gap-1 border-amber-500/50 text-amber-600 dark:text-amber-400">
-                  <AlertTriangle className="h-3 w-3" />
-                  {a}
-                </Badge>
+                <span key={i} className="px-2.5 py-1 bg-amber-50 text-amber-700 text-xs font-medium rounded-lg">
+                  ⚠ {a}
+                </span>
               ))}
             </div>
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
