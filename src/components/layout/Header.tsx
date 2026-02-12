@@ -29,7 +29,7 @@ export default function Header() {
 
   return (
     <header className="h-14 md:h-16 bg-surface border-b border-border-light flex items-center justify-between px-4 md:px-6">
-      <div className="flex items-center gap-2 md:gap-3">
+      <div className="flex items-center gap-2 md:gap-3 md:hidden">
         <Image src="/logo.png" alt="Parchi" width={36} height={36} className="rounded-lg" />
       </div>
 
