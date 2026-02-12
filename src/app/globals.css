@@ -25,6 +25,17 @@ body {
   font-family: var(--font-sans);
 }
 
+/* Dark mode variable overrides */
+.dark {
+  --color-bg: #0f1117;
+  --color-surface: #1a1d27;
+  --color-border-light: #2d3141;
+  --color-text-primary: #e2e8f0;
+  --color-text-secondary: #94a3b8;
+  --color-medical-blue: #1a2a3a;
+  --color-primary-light: #1e3a5f;
+}
+
 .material-symbols-outlined {
   font-family: 'Material Symbols Outlined', sans-serif;
   font-weight: 400;
