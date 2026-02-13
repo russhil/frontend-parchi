@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { simpleSearchPatients, createSetupIntake } from "@/lib/api";
 
@@ -38,6 +38,8 @@ export default function SetupIntakePage() {
     const [results, setResults] = useState<any[]>([]);
     const [isSearching, setIsSearching] = useState(false);
     const [selectedPatient, setSelectedPatient] = useState<any>(null);
+    const [hasSearched, setHasSearched] = useState(false);
+    const debounceTimer = useRef<NodeJS.Timeout | null>(null);
 
     const [formData, setFormData] = useState({
         name: "",
@@ -50,20 +52,47 @@ export default function SetupIntakePage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
-    const handleSearch = async () => {
-        if (!query.trim()) return;
+    const handleSearch = useCallback(async (searchQuery: string) => {
+        if (!searchQuery.trim()) {
+            setResults([]);
+            setHasSearched(false);
+            return;
+        }
         setIsSearching(true);
-        setResults([]);
         try {
-            const data = await simpleSearchPatients(query);
+            const data = await simpleSearchPatients(searchQuery);
             setResults(data.results || []);
+            setHasSearched(true);
         } catch (err: any) {
             console.error(err);
             setError("Search failed. Please check if the backend is running.");
         } finally {
             setIsSearching(false);
         }
-    };
+    }, []);
+
+    // Auto-search with debounce as user types
+    useEffect(() => {
+        if (debounceTimer.current) {
+            clearTimeout(debounceTimer.current);
+        }
+
+        if (!query.trim()) {
+            setResults([]);
+            setHasSearched(false);
+            return;
+        }
+
+        debounceTimer.current = setTimeout(() => {
+            handleSearch(query);
+        }, 300);
+
+        return () => {
+            if (debounceTimer.current) {
+                clearTimeout(debounceTimer.current);
+            }
+        };
+    }, [query, handleSearch]);
 
     const selectPatient = (p: any) => {
         setSelectedPatient(p);
@@ -125,15 +154,19 @@ export default function SetupIntakePage() {
 
                 {!selectedPatient ? (
                     <div className="space-y-4">
-                        <div className="flex gap-2">
+                        <div className="relative">
                             <input
-                                className="flex-1 px-4 py-2 border dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100"
-                                placeholder="Search by name, phone, or condition..."
+                                className="w-full px-4 py-2 border dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100"
+                                placeholder="Start typing to search by name, phone, or condition..."
                                 value={query}
                                 onChange={(e) => setQuery(e.target.value)}
-                                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                                autoFocus
                             />
-                            <Button onClick={handleSearch} isLoading={isSearching}>Search</Button>
+                            {isSearching && (
+                                <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                                    <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                                </div>
+                            )}
                         </div>
 
                         {/* Results */}
@@ -152,7 +185,7 @@ export default function SetupIntakePage() {
                         )}
 
                         {/* New Patient Option */}
-                        {(query && !isSearching) && (
+                        {(hasSearched && !isSearching) && (
                             <div className="pt-4 border-t dark:border-slate-700 mt-4 animate-in fade-in">
                                 <p className="text-sm text-slate-500 dark:text-slate-400 mb-2">
                                     {results.length === 0 ? "No results found." : "Not seeing the right patient?"}
