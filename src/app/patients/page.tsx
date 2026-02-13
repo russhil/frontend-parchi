@@ -7,7 +7,7 @@ import type { Patient } from "@/types";
 
 // List of severe conditions (can be expanded)
 const SEVERE_CONDITIONS = [
-    "cancer", "heart disease", "stroke", "diabetes complications", 
+    "cancer", "heart disease", "stroke", "diabetes complications",
     "kidney failure", "liver failure", "copd", "heart attack", "angina"
 ];
 
@@ -48,10 +48,10 @@ export default function PatientsPage() {
             <div className="p-4 md:p-6">
                 <div className="max-w-6xl mx-auto">
                     <div className="animate-pulse space-y-4">
-                        <div className="h-8 bg-gray-200 rounded w-48" />
-                        <div className="h-12 bg-gray-200 rounded" />
+                        <div className="h-8 bg-gray-200 dark:bg-slate-700 rounded w-48" />
+                        <div className="h-12 bg-gray-200 dark:bg-slate-700 rounded" />
                         {[1, 2, 3, 4, 5].map((i) => (
-                            <div key={i} className="h-20 bg-gray-200 rounded" />
+                            <div key={i} className="h-20 bg-gray-200 dark:bg-slate-700 rounded" />
                         ))}
                     </div>
                 </div>
@@ -107,97 +107,95 @@ export default function PatientsPage() {
                         {filteredPatients.map((patient) => (
                             <div
                                 key={patient.id}
-                                className="px-4 md:px-5 py-4 hover:bg-gray-50 transition cursor-pointer"
+                                className="px-4 md:px-5 py-4 hover:bg-gray-50 dark:hover:bg-slate-800 transition cursor-pointer"
                                 onClick={() => router.push(`/patient/${patient.id}`)}
                             >
-                    {/* Desktop Layout */}
-                    <div className="hidden lg:grid grid-cols-12 gap-4 items-center">
-                        {/* Patient Info */}
-                        <div className="col-span-4 flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-primary-light flex items-center justify-center text-primary font-semibold text-sm flex-shrink-0">
-                                {patient.name.split(" ").map((n) => n[0]).join("")}
-                            </div>
-                            <div className="min-w-0">
-                                <p className="text-sm font-semibold text-text-primary truncate">{patient.name}</p>
-                                <p className="text-xs text-text-secondary truncate">{patient.phone}</p>
-                            </div>
-                        </div>
+                                {/* Desktop Layout */}
+                                <div className="hidden lg:grid grid-cols-12 gap-4 items-center">
+                                    {/* Patient Info */}
+                                    <div className="col-span-4 flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-full bg-primary-light flex items-center justify-center text-primary font-semibold text-sm flex-shrink-0">
+                                            {patient.name.split(" ").map((n) => n[0]).join("")}
+                                        </div>
+                                        <div className="min-w-0">
+                                            <p className="text-sm font-semibold text-text-primary truncate">{patient.name}</p>
+                                            <p className="text-xs text-text-secondary truncate">{patient.phone}</p>
+                                        </div>
+                                    </div>
 
-                        {/* Age / Gender */}
-                        <div className="col-span-2 flex items-center">
-                            <p className="text-sm text-text-primary">
-                                {patient.age}y, {patient.gender?.charAt(0)}
-                            </p>
-                        </div>
+                                    {/* Age / Gender */}
+                                    <div className="col-span-2 flex items-center">
+                                        <p className="text-sm text-text-primary">
+                                            {patient.age}y, {patient.gender?.charAt(0)}
+                                        </p>
+                                    </div>
 
-                        {/* Conditions */}
-                        <div className="col-span-6 flex items-center gap-1.5 flex-wrap">
-                            {patient.conditions?.slice(0, 3).map((cond) => {
-                                const severity = getConditionSeverity(cond);
-                                return (
-                                    <span
-                                        key={cond}
-                                        className={`px-2 py-0.5 text-xs font-medium rounded-lg ${
-                                            severity === "severe" 
-                                                ? "bg-red-100 text-red-700" 
-                                                : "bg-green-100 text-green-700"
-                                        }`}
-                                    >
-                                        {cond}
-                                    </span>
-                                );
-                            })}
-                            {patient.conditions?.length > 3 && (
-                                <span className="text-xs text-text-secondary">
-                                    +{patient.conditions.length - 3}
-                                </span>
-                            )}
-                            {!patient.conditions?.length && (
-                                <span className="text-xs text-text-secondary">No conditions</span>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Mobile Layout */}
-                    <div className="lg:hidden space-y-3">
-                        {/* Patient Info */}
-                        <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 rounded-full bg-primary-light flex items-center justify-center text-primary font-semibold text-sm flex-shrink-0">
-                                {patient.name.split(" ").map((n) => n[0]).join("")}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <p className="text-sm font-semibold text-text-primary">{patient.name}</p>
-                                <p className="text-xs text-text-secondary">{patient.phone}</p>
-                                <p className="text-xs text-text-secondary mt-0.5">
-                                    {patient.age}y, {patient.gender}
-                                </p>
-                            </div>
-                        </div>
-
-                        {/* Conditions */}
-                        {patient.conditions?.length > 0 && (
-                            <div>
-                                <p className="text-[10px] font-bold text-text-secondary uppercase tracking-wide mb-1.5">Conditions</p>
-                                <div className="flex flex-wrap gap-1.5">
-                                    {patient.conditions.map((cond) => {
-                                        const severity = getConditionSeverity(cond);
-                                        return (
-                                            <span
-                                                key={cond}
-                                                className={`px-2 py-0.5 text-xs font-medium rounded-lg ${
-                                                    severity === "severe" 
-                                                        ? "bg-red-100 text-red-700" 
-                                                        : "bg-green-100 text-green-700"
-                                                }`}
-                                            >
-                                                {cond}
+                                    {/* Conditions */}
+                                    <div className="col-span-6 flex items-center gap-1.5 flex-wrap">
+                                        {patient.conditions?.slice(0, 3).map((cond) => {
+                                            const severity = getConditionSeverity(cond);
+                                            return (
+                                                <span
+                                                    key={cond}
+                                                    className={`px-2 py-0.5 text-xs font-medium rounded-lg ${severity === "severe"
+                                                            ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300"
+                                                            : "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
+                                                        }`}
+                                                >
+                                                    {cond}
+                                                </span>
+                                            );
+                                        })}
+                                        {patient.conditions?.length > 3 && (
+                                            <span className="text-xs text-text-secondary">
+                                                +{patient.conditions.length - 3}
                                             </span>
-                                        );
-                                    })}
+                                        )}
+                                        {!patient.conditions?.length && (
+                                            <span className="text-xs text-text-secondary">No conditions</span>
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
-                        )}
-                    </div>
+
+                                {/* Mobile Layout */}
+                                <div className="lg:hidden space-y-3">
+                                    {/* Patient Info */}
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-12 h-12 rounded-full bg-primary-light flex items-center justify-center text-primary font-semibold text-sm flex-shrink-0">
+                                            {patient.name.split(" ").map((n) => n[0]).join("")}
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-semibold text-text-primary">{patient.name}</p>
+                                            <p className="text-xs text-text-secondary">{patient.phone}</p>
+                                            <p className="text-xs text-text-secondary mt-0.5">
+                                                {patient.age}y, {patient.gender}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* Conditions */}
+                                    {patient.conditions?.length > 0 && (
+                                        <div>
+                                            <p className="text-[10px] font-bold text-text-secondary uppercase tracking-wide mb-1.5">Conditions</p>
+                                            <div className="flex flex-wrap gap-1.5">
+                                                {patient.conditions.map((cond) => {
+                                                    const severity = getConditionSeverity(cond);
+                                                    return (
+                                                        <span
+                                                            key={cond}
+                                                            className={`px-2 py-0.5 text-xs font-medium rounded-lg ${severity === "severe"
+                                                                    ? "bg-red-100 text-red-700"
+                                                                    : "bg-green-100 text-green-700"
+                                                                }`}
+                                                        >
+                                                            {cond}
+                                                        </span>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         ))}
 
