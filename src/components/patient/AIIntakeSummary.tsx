@@ -45,7 +45,7 @@ export default function AIIntakeSummary({ summary, patientId, onRefresh }: AIInt
 
   return (
     <>
-      <div className="bg-white rounded-2xl shadow-sm border border-primary/10 p-3 relative overflow-hidden group hover:shadow-md transition-shadow">
+      <div className="bg-surface rounded-2xl shadow-sm border border-primary/10 p-3 relative overflow-hidden group hover:shadow-md transition-shadow">
         {/* Gradient accent */}
         <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-primary/5 to-transparent pointer-events-none rounded-tr-2xl" />
 

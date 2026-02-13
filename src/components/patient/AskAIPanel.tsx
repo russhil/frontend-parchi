@@ -89,7 +89,7 @@ export default function AskAIPanel({ patientId }: AskAIPanelProps) {
     <div className="space-y-3">
       {/* Expanded chat messages area */}
       {expanded && messages.length > 0 && (
-        <div className="bg-white rounded-2xl shadow-sm border border-primary/10 overflow-hidden">
+        <div className="bg-surface rounded-2xl shadow-sm border border-primary/10 overflow-hidden">
           <div className="px-4 py-3 border-b border-border-light flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="material-symbols-outlined text-primary text-[18px]">forum</span>
@@ -154,16 +154,16 @@ export default function AskAIPanel({ patientId }: AskAIPanelProps) {
           {suggestionsLoading ? (
             // Skeleton loader for suggestions
             <div className="flex gap-2 animate-pulse w-full">
-              <div className="h-8 bg-gray-100 rounded-full w-32"></div>
-              <div className="h-8 bg-gray-100 rounded-full w-40"></div>
-              <div className="h-8 bg-gray-100 rounded-full w-24"></div>
+              <div className="h-8 bg-gray-100 dark:bg-slate-700 rounded-full w-32"></div>
+              <div className="h-8 bg-gray-100 dark:bg-slate-700 rounded-full w-40"></div>
+              <div className="h-8 bg-gray-100 dark:bg-slate-700 rounded-full w-24"></div>
             </div>
           ) : (
             suggestions.map((s) => (
               <button
                 key={s}
                 onClick={() => { setInput(s); inputRef.current?.focus(); }}
-                className="px-3 py-1.5 bg-white rounded-full text-xs text-text-secondary hover:bg-primary-light hover:text-primary transition border border-border-light shadow-sm text-left truncate max-w-full"
+                className="px-3 py-1.5 bg-surface rounded-full text-xs text-text-secondary hover:bg-primary-light hover:text-primary transition border border-border-light shadow-sm text-left truncate max-w-full"
                 title={s}
               >
                 {s}
@@ -174,7 +174,7 @@ export default function AskAIPanel({ patientId }: AskAIPanelProps) {
       )}
 
       {/* Inline chat bar — matches reference */}
-      <div className="bg-white rounded-2xl shadow-sm border border-primary/10 p-1 flex items-center gap-2 ring-4 ring-medical-blue">
+      <div className="bg-surface rounded-2xl shadow-sm border border-primary/10 p-1 flex items-center gap-2 ring-4 ring-medical-blue">
         <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0 ml-1">
           <span className="material-symbols-outlined text-primary">smart_toy</span>
         </div>

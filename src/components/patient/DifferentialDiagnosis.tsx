@@ -41,9 +41,9 @@ export default function DifferentialDiagnosis({ items: initialItems, patientId, 
   const currentItems = (items || []).filter(item => item.condition && item.condition.trim() !== "" && item.match_pct != null);
 
   const getMatchLabel = (pct: number) => {
-    if (pct >= 80) return { label: "High Match", color: "text-purple-700 bg-white border border-purple-200" };
-    if (pct >= 50) return { label: "Moderate", color: "text-amber-700 bg-white border border-amber-200" };
-    return { label: "Low Match", color: "text-gray-500 bg-white border border-gray-200" };
+    if (pct >= 80) return { label: "High Match", color: "text-purple-700 dark:text-purple-300 bg-white dark:bg-purple-900/40 border border-purple-200 dark:border-purple-800" };
+    if (pct >= 50) return { label: "Moderate", color: "text-amber-700 dark:text-amber-300 bg-white dark:bg-amber-900/40 border border-amber-200 dark:border-amber-800" };
+    return { label: "Low Match", color: "text-gray-500 dark:text-gray-400 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700" };
   };
 
   const INITIAL_SHOW_COUNT = 3;
@@ -51,7 +51,7 @@ export default function DifferentialDiagnosis({ items: initialItems, patientId, 
   const hasMore = currentItems.length > INITIAL_SHOW_COUNT;
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-primary/10 p-4 hover:shadow-md transition-shadow relative overflow-hidden">
+    <div className="bg-surface rounded-2xl shadow-sm border border-primary/10 p-4 hover:shadow-md transition-shadow relative overflow-hidden">
       {/* Gradient accent */}
       <div className="absolute top-0 right-0 w-28 h-28 bg-gradient-to-bl from-purple-500/5 to-transparent pointer-events-none rounded-tr-2xl" />
 
@@ -92,7 +92,7 @@ export default function DifferentialDiagnosis({ items: initialItems, patientId, 
               <div
                 key={i}
                 className={`p-3.5 rounded-xl transition-all ${isTop
-                  ? "bg-purple-50 border border-purple-100"
+                  ? "bg-purple-50 dark:bg-purple-900/10 border border-purple-100 dark:border-purple-900/30"
                   : "bg-bg border border-border-light opacity-80"
                   }`}
               >
@@ -130,7 +130,7 @@ export default function DifferentialDiagnosis({ items: initialItems, patientId, 
         {loading && currentItems.length === 0 && (
           <div className="animate-pulse space-y-3">
             {[1, 2, 3].map(i => (
-              <div key={i} className={`h-16 rounded-xl border ${i === 1 ? "bg-purple-50 border-purple-100" : "bg-gray-50 border-gray-100"}`} />
+              <div key={i} className={`h-16 rounded-xl border ${i === 1 ? "bg-purple-50 dark:bg-purple-900/10 border-purple-100 dark:border-purple-900/30" : "bg-gray-50 dark:bg-slate-800 border-gray-100 dark:border-slate-700"}`} />
             ))}
           </div>
         )}

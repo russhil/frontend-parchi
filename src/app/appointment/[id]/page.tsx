@@ -44,20 +44,20 @@ export default function AppointmentPage() {
     if (loading) {
         return (
             <div className="flex h-full">
-                <div className="w-[30%] min-w-[320px] max-w-[450px] bg-white border-r border-border-light p-6 space-y-6">
+                <div className="w-[30%] min-w-[320px] max-w-[450px] bg-surface border-r border-border-light p-6 space-y-6">
                     <div className="animate-pulse space-y-4">
-                        <div className="h-8 bg-gray-200 rounded w-3/4" />
-                        <div className="h-4 bg-gray-200 rounded w-1/2" />
+                        <div className="h-8 bg-gray-200 dark:bg-slate-700 rounded w-3/4" />
+                        <div className="h-4 bg-gray-200 dark:bg-slate-700 rounded w-1/2" />
                         <div className="grid grid-cols-2 gap-3">
-                            {[1, 2, 3, 4].map(i => <div key={i} className="h-16 bg-gray-100 rounded-xl" />)}
+                            {[1, 2, 3, 4].map(i => <div key={i} className="h-16 bg-gray-100 dark:bg-slate-800 rounded-xl" />)}
                         </div>
                     </div>
                 </div>
                 <div className="flex-1 bg-medical-blue p-6">
                     <div className="animate-pulse space-y-4">
-                        <div className="h-6 bg-blue-100 rounded w-1/3" />
-                        <div className="h-40 bg-white rounded-2xl" />
-                        <div className="h-32 bg-white rounded-2xl" />
+                        <div className="h-6 bg-blue-100 dark:bg-blue-900/40 rounded w-1/3" />
+                        <div className="h-40 bg-surface rounded-2xl" />
+                        <div className="h-32 bg-surface rounded-2xl" />
                     </div>
                 </div>
             </div>
@@ -108,7 +108,7 @@ export default function AppointmentPage() {
     return (
         <div className={`flex flex-col lg:flex-row min-h-screen lg:h-full lg:overflow-hidden ${is_archived ? "opacity-90" : ""}`}>
             {/* ── LEFT PANEL: Patient Sidebar ── */}
-            <section className="w-full lg:w-[30%] lg:min-w-[320px] lg:max-w-[450px] bg-white border-b lg:border-b-0 lg:border-r border-border-light h-auto lg:h-full flex flex-col overflow-visible lg:overflow-y-auto">
+            <section className="w-full lg:w-[30%] lg:min-w-[320px] lg:max-w-[450px] bg-surface border-b lg:border-b-0 lg:border-r border-border-light h-auto lg:h-full flex flex-col overflow-visible lg:overflow-y-auto">
                 <div className="p-6 space-y-6">
                     {/* Back + Patient Name */}
                     <div>
@@ -203,7 +203,7 @@ export default function AppointmentPage() {
                                             </span>
                                             <div className="flex flex-wrap gap-2">
                                                 {patient.conditions.filter(Boolean).map(c => (
-                                                    <span key={c} className="px-3 py-1.5 rounded-lg bg-gray-100 text-gray-700 text-sm font-semibold border border-gray-200">
+                                                    <span key={c} className="px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 text-sm font-semibold border border-gray-200 dark:border-slate-700">
                                                         {c}
                                                     </span>
                                                 ))}
@@ -219,7 +219,7 @@ export default function AppointmentPage() {
                                             </span>
                                             <div className="flex flex-wrap gap-2">
                                                 {patient.allergies.filter(Boolean).map(a => (
-                                                    <span key={a} className="px-3 py-1.5 rounded-lg bg-red-50 text-red-800 text-sm font-semibold border border-red-100 flex items-center gap-1">
+                                                    <span key={a} className="px-3 py-1.5 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-300 text-sm font-semibold border border-red-100 dark:border-red-900/30 flex items-center gap-1">
                                                         <span className="material-symbols-outlined text-[14px]">warning</span>
                                                         {a}
                                                     </span>
@@ -284,7 +284,7 @@ export default function AppointmentPage() {
                             </span>
                         </div>
                         {confidence !== null && (
-                            <div className="ml-auto flex items-center gap-2 bg-white px-2.5 py-1 rounded-full border border-border-light shadow-sm">
+                            <div className="ml-auto flex items-center gap-2 bg-surface px-2.5 py-1 rounded-full border border-border-light shadow-sm">
                                 <span className="text-[10px] font-bold text-text-secondary uppercase">Confidence</span>
                                 <span className={`text-sm font-bold ${confidence >= 70 ? "text-emerald-600" : confidence >= 40 ? "text-amber-600" : "text-red-500"}`}>
                                     {confidence}%
@@ -325,13 +325,13 @@ export default function AppointmentPage() {
 
                             {/* Report Insights */}
                             {data.report_insights && data.report_insights.flags && data.report_insights.flags.length > 0 && (
-                                <div className="bg-white rounded-2xl shadow-sm border border-primary/10 p-4 hover:shadow-md transition-shadow">
+                                <div className="bg-surface rounded-2xl shadow-sm border border-primary/10 p-4 hover:shadow-md transition-shadow">
                                     <h3 className="text-sm font-bold text-text-primary flex items-center gap-2 mb-2">
                                         <span className="material-symbols-outlined text-primary text-[18px]">lab_profile</span>
                                         Report Insights
                                     </h3>
                                     {data.report_insights.flags.filter(f => f.type === "warning" || f.type === "error").length > 0 && (
-                                        <div className="bg-red-50 border border-red-100 rounded-xl p-3 mb-2">
+                                        <div className="bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 rounded-xl p-3 mb-2">
                                             <div className="flex items-start gap-2">
                                                 <span className="material-symbols-outlined text-red-700 mt-0.5 text-[16px]">warning</span>
                                                 <div>
