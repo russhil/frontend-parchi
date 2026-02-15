@@ -11,7 +11,7 @@ export default function Header() {
   const [query, setQuery] = useState("");
 
   // Hide header on public pages
-  if (pathname === '/login' || pathname.startsWith('/intake/')) return null;
+  if (pathname === '/login' || pathname === '/landing' || pathname === '/landing2' || pathname === '/privacy-policy' || pathname.startsWith('/intake/')) return null;
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();

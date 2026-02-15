@@ -6,7 +6,7 @@ export function middleware(request: NextRequest) {
     const path = request.nextUrl.pathname;
 
     // Define public paths that don't require authentication
-    const isPublicPath = path === '/login' || path.startsWith('/intake');
+    const isPublicPath = path === '/login' || path === '/landing' || path === '/landing2' || path === '/privacy-policy' || path.startsWith('/intake');
 
     // Check for the auth cookie
     // Note: In a real app, you'd verify the token signature/validity
@@ -31,14 +31,13 @@ export const config = {
     matcher: [
         /*
          * Match all request paths except for the ones starting with:
-         * - api (API routes) -> We might want to protect these too, but let's start with pages. 
-         *      Actually, for a real app, protect API too. But for this MVP landing page requirement, 
-         *      protecting the UI is key. Let's protect everything except static files.
+         * - api (API routes)
          * - _next/static (static files)
          * - _next/image (image optimization files)
          * - favicon.ico (favicon file)
-         * - public (public folder)
+         * And exclude common static file extensions served from public/
+         * (Next.js serves public/ files at the root, e.g. /logo.png not /public/logo.png)
          */
-        '/((?!_next/static|_next/image|favicon.ico|public).*)',
+        '/((?!_next/static|_next/image|favicon\\.ico|.*\\.(?:png|jpg|jpeg|svg|ico|webp|gif|css|js|woff2?|ttf|eot)$).*)',
     ],
 };

@@ -17,7 +17,7 @@ export default function Sidebar() {
   const router = useRouter();
 
   // Hide sidebar on public pages
-  if (pathname === '/login' || pathname.startsWith('/intake/')) return null;
+  if (pathname === '/login' || pathname === '/landing' || pathname === '/landing2' || pathname === '/privacy-policy' || pathname.startsWith('/intake/')) return null;
 
   const handleSignOut = () => {
     // Clear the auth cookie
