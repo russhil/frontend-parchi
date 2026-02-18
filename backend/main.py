@@ -2062,7 +2062,7 @@ async def upload_parchi(file: UploadFile = File(...)):
 
 
 @app.post("/parchi/process")
-def process_parchi(req: ParchiProcessRequest, x_clinic_id: str = Header(None)):
+def process_parchi(req: ParchiProcessRequest, current_user: auth.User = Depends(auth.get_current_user)):
     """
     Process reviewed parchi entries:
     1. For each entry: check patient (by phone), create if new
@@ -2091,10 +2091,10 @@ def process_parchi(req: ParchiProcessRequest, x_clinic_id: str = Header(None)):
         try:
             # 1. Check if patient exists by phone
             clean_phone = entry.phone.replace("+", "").replace(" ", "").replace("-", "")
-            existing = find_patient_duplicate(phone=clean_phone, clinic_id=x_clinic_id)
+            existing = find_patient_duplicate(phone=clean_phone, clinic_id=current_user.clinic_id)
             if not existing:
                 # Also try with the original format
-                existing = find_patient_duplicate(phone=entry.phone, clinic_id=x_clinic_id)
+                existing = find_patient_duplicate(phone=entry.phone, clinic_id=current_user.clinic_id)
 
             if existing:
                 pid = existing["id"]
@@ -2107,17 +2107,18 @@ def process_parchi(req: ParchiProcessRequest, x_clinic_id: str = Header(None)):
                     "name": entry.name,
                     "phone": entry.phone,
                 }
-                new_patient = create_patient(p_data, clinic_id=x_clinic_id)
+                new_patient = create_patient(p_data, clinic_id=current_user.clinic_id)
                 pid = new_patient["id"]
 
             entry_result["patient_id"] = pid
 
             # 2. Check for duplicate appointment (same patient + same time)
-            existing_appt = find_existing_appointment(pid, entry.appointment_time)
+            existing_appt = find_existing_appointment(pid, entry.appointment_time, clinic_id=current_user.clinic_id)
             if existing_appt:
                 logger.info("[Parchi] Duplicate appointment found for %s at %s — skipping", entry.name, entry.appointment_time)
                 entry_result["is_duplicate"] = True
                 entry_result["appointment_id"] = existing_appt["id"]
+                results.append(entry_result)
                 continue  # Skip creating appointment, token, and WhatsApp
 
             # 3. Create appointment
@@ -2129,7 +2130,7 @@ def process_parchi(req: ParchiProcessRequest, x_clinic_id: str = Header(None)):
                 "status": "scheduled",
                 "reason": "Intake Pending",
             }
-            create_appointment(appt_data, clinic_id=x_clinic_id)
+            create_appointment(appt_data, clinic_id=current_user.clinic_id)
             entry_result["appointment_id"] = appt_id
 
             # 3. Create intake token
@@ -2356,14 +2357,18 @@ def submit_intake(req: IntakeSubmitRequest):
 
 
 @app.get("/patients/search-simple")
-def simple_search_patients(q: str):
-    """Simple search for patients by name or phone."""
+def simple_search_patients(q: str, current_user: auth.User = Depends(auth.get_current_user)):
+    """Simple search for patients by name or phone, scoped to clinic."""
     client = get_supabase()
-    query = client.table("patients").select("id, name, phone")
     
-    # Supabase doesn't support complex OR in a single filter easily without RPC or postgrest syntax
-    # We'll fetch and filter in memory for 'simple' if q is short, or use .or_
-    res = client.table("patients").select("id, name, phone").or_(f"name.ilike.%{q}%,phone.ilike.%{q}%").execute()
+    # Filter by clinic_id AND match name/phone
+    res = (
+        client.table("patients")
+        .select("id, name, phone")
+        .eq("clinic_id", current_user.clinic_id)
+        .or_(f"name.ilike.%{q}%,phone.ilike.%{q}%")
+        .execute()
+    )
     
     # De-duplicate by phone to avoid showing the same person multiple times
     seen_phones = set()
@@ -2384,7 +2389,7 @@ def simple_search_patients(q: str):
 # --- Routes: Intake Setup (Receptionist) & Public Intake ---
 
 @app.post("/setup-intake/create")
-def create_setup_intake(req: SetupIntakeRequest, x_clinic_id: str = Header(None)):
+def create_setup_intake(req: SetupIntakeRequest, current_user: auth.User = Depends(auth.get_current_user)):
     """
     Receptionist creates an intake request (token).
     1. Creates/Gets Patient.
@@ -2399,7 +2404,7 @@ def create_setup_intake(req: SetupIntakeRequest, x_clinic_id: str = Header(None)
             raise HTTPException(status_code=404, detail="Patient not found")
         pid = req.patient_id
     else:
-        existing = find_patient_duplicate(phone=req.phone, clinic_id=x_clinic_id)
+        existing = find_patient_duplicate(phone=req.phone, clinic_id=current_user.clinic_id)
         if existing:
             pid = existing["id"]
         else:
@@ -2410,7 +2415,7 @@ def create_setup_intake(req: SetupIntakeRequest, x_clinic_id: str = Header(None)
                     "name": req.name,
                     "phone": req.phone
                 }
-                new_p = create_patient(p_data, clinic_id=x_clinic_id)
+                new_p = create_patient(p_data, clinic_id=current_user.clinic_id)
                 pid = new_p["id"]
             except Exception as e:
                 raise HTTPException(status_code=500, detail=f"Failed to create patient: {e}")
@@ -2424,6 +2429,7 @@ def create_setup_intake(req: SetupIntakeRequest, x_clinic_id: str = Header(None)
             .select("id") \
             .eq("patient_id", pid) \
             .eq("start_time", req.appointment_time) \
+            .eq("clinic_id", current_user.clinic_id) \
             .execute()
             
         if existing_appt.data:
@@ -2448,7 +2454,7 @@ def create_setup_intake(req: SetupIntakeRequest, x_clinic_id: str = Header(None)
             "status": "scheduled",
             "reason": "Intake Pending"
         }
-        create_appointment(appt_data, clinic_id=x_clinic_id)
+        create_appointment(appt_data, clinic_id=current_user.clinic_id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to handle appointment: {e}")
 

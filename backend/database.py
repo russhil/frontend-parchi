@@ -364,16 +364,18 @@ def get_all_appointments(clinic_id: str) -> list[dict]:
     return result.data or []
 
 
-def find_existing_appointment(patient_id: str, start_time: str) -> Optional[dict]:
-    """Check if an appointment already exists for this patient at this time."""
+def find_existing_appointment(patient_id: str, start_time: str, clinic_id: str = None) -> Optional[dict]:
+    """Check if an appointment already exists for this patient at this time, scoped to clinic."""
     client = get_supabase()
-    result = (
+    q = (
         client.table("appointments")
         .select("*")
         .eq("patient_id", patient_id)
         .eq("start_time", start_time)
-        .execute()
     )
+    if clinic_id:
+        q = q.eq("clinic_id", clinic_id)
+    result = q.execute()
     return result.data[0] if result.data else None
 
 
