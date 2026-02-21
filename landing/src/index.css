@@ -54,6 +54,7 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 @layer base {
@@ -63,6 +64,7 @@ html {
 
   body {
     @apply bg-background text-foreground antialiased;
+    overflow-x: hidden;
   }
 }
 
@@ -84,10 +86,11 @@ html {
   }
 
   .glass-card-hover {
-    background: hsl(220 20% 10% / 0.7);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border: 1px solid hsl(210 100% 56% / 0.15);
+    background: hsl(220 20% 10% / 0.8);
+    backdrop-filter: blur(32px);
+    -webkit-backdrop-filter: blur(32px);
+    border: 1px solid hsl(210 100% 56% / 0.3);
+    box-shadow: 0 0 40px -8px hsl(210 100% 56% / 0.2), 0 0 80px -20px hsl(190 100% 50% / 0.1);
   }
 
   .gradient-border {
@@ -109,22 +112,23 @@ html {
 
   .hero-glow {
     position: absolute;
-    width: 700px;
-    height: 700px;
+    width: 1200px;
+    height: 1200px;
     border-radius: 50%;
-    background: radial-gradient(circle, hsl(210 100% 56% / 0.12) 0%, transparent 70%);
-    filter: blur(80px);
+    background: radial-gradient(circle, hsl(210 100% 56% / 0.22) 0%, hsl(190 100% 50% / 0.05) 30%, transparent 60%);
     pointer-events: none;
+    transform: translateZ(0);
+    /* Hardware accel prevents clipping */
   }
 
   .section-glow {
     position: absolute;
-    width: 500px;
-    height: 500px;
+    width: 1000px;
+    height: 1000px;
     border-radius: 50%;
-    background: radial-gradient(circle, hsl(210 100% 56% / 0.06) 0%, transparent 70%);
-    filter: blur(60px);
+    background: radial-gradient(circle, hsl(210 100% 56% / 0.15) 0%, hsl(190 100% 50% / 0.03) 30%, transparent 60%);
     pointer-events: none;
+    transform: translateZ(0);
   }
 
   .flowing-line {

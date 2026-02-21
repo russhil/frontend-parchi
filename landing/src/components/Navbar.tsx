@@ -46,37 +46,39 @@ const Navbar = () => {
           </motion.a>
         </div>
 
-        <button
-          className="text-foreground md:hidden"
-          onClick={() => setMobileOpen(!mobileOpen)}
-        >
-          {mobileOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+        <div className="flex items-center gap-4 md:hidden">
+          <a
+            href={loginUrl}
+            className="flex items-center gap-1.5 rounded-lg bg-primary px-4 py-1.5 text-xs font-medium text-primary-foreground transition-all"
+          >
+            <LogIn size={14} />
+            Login
+          </a>
+          <button
+            className="text-foreground"
+            onClick={() => setMobileOpen(!mobileOpen)}
+          >
+            {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
       </div>
 
       {mobileOpen && (
         <motion.div
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: "auto" }}
-          className="border-t border-border bg-background px-6 py-4 md:hidden"
+          className="absolute top-16 left-0 right-0 border-b border-border/50 bg-background/95 backdrop-blur-xl px-6 py-4 md:hidden shadow-lg"
         >
           {["Features", "How It Works", "Team"].map((item) => (
             <a
               key={item}
               href={`#${item.toLowerCase().replace(/ /g, "-")}`}
-              className="block py-3 text-sm text-muted-foreground"
+              className="block py-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
               onClick={() => setMobileOpen(false)}
             >
               {item}
             </a>
           ))}
-          <a
-            href={loginUrl}
-            className="mt-2 flex items-center justify-center gap-2 rounded-lg bg-primary py-3 text-center text-sm font-medium text-primary-foreground"
-          >
-            <LogIn size={16} />
-            Login
-          </a>
         </motion.div>
       )}
     </motion.nav>
